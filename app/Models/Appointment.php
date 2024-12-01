@@ -14,6 +14,8 @@ class Appointment extends Model
 
     // 複数代入可能な属性
     protected $fillable = [
+        'host_id',
+        'room_id',
         'appointment_date',
         'purpose'
     ];

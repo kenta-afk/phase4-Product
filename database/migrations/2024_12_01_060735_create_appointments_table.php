@@ -10,10 +10,9 @@ class CreateAppointmentsTable extends Migration
     {
         Schema::create('appointments', function (Blueprint $table) {
             $table->id();
-            $table->string('visitor_name');
-            $table->string('visitor_company');
-            $table->string('host_name');
-            $table->string('meeting_room');
+            $table->string('visitor_id');
+            $table->string('host_id');
+            $table->string('room_id');
             $table->dateTime('appointment_date');
             $table->text('purpose');
             $table->timestamps();

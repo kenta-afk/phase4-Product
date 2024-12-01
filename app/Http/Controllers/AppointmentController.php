@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Appointment;
+use App\Models\Room;
+use App\Models\Host;
 
 class AppointmentController extends Controller
 {
@@ -34,12 +36,28 @@ class AppointmentController extends Controller
         $appointmentDate = $request->input('appointment_date'); 
         $purpose = $request->input('purpose');
 
+        //担当者名を社員IDに変える
+        $host = Host::where('host_name', $hostName)->first();
+        if ($host) {
+            $hostId = $host->host_id;
+        } else {
+            //見つかんなかったときの処理をここにいれる
+        }
+
+        //会議室名を会議室IDに変える
+        $room = Room::where('room_name', $roomName)->first();
+        if ($room) {
+            $roomId = $room->room_id;
+        } else {
+            //見つかんなかったときの処理をここにいれる
+        }
+
+
         // それぞれの変数を１つのクラスにまとめる
         $appointment = new Appointment(); 
-        $appointment->visitor_name = $visitorName; 
-        $appointment->visitor_company = $visitorCompany; 
-        $appointment->host_name = $hostName; 
-        $appointment->room_name = $roomName; 
+        $appointment->visitor_id = $visitorId; 
+        $appointment->host_name = $hostId; 
+        $appointment->room_id = $roomId; 
         $appointment->appointment_date = $appointmentDate; 
         $appointment->purpose = $purpose; 
         $appointment->save();
