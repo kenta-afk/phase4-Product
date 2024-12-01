@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Appointment;
 
 class AppointmentController extends Controller
 {
@@ -10,7 +11,9 @@ class AppointmentController extends Controller
     public function create() 
     { 
         return view('appointments.create');
-    } // アポ情報の保存 
+    } 
+    
+    // アポ情報の保存 
     public function store(Request $request) 
     { 
         // バリデーション 
@@ -20,11 +23,16 @@ class AppointmentController extends Controller
             'host_name' => 'required|string|max:255', 
             'meeting_room' => 'required|string|max:255', 
             'appointment_date' => 'required|date', 
-            'purpose' => 'required|string|max:1000', ]); 
+            'purpose' => 'required|string|max:1000', 
+        ]); 
+
+        
             
-            // アポ情報の保存処理（例） 
-            // Appointment::create($validatedData); 
-            return redirect()->route('appointments.index')->with('success', 'アポ情報が登録されました。'); 
+        // アポ情報の保存処理（例） 
+        Appointment::create($validatedData); 
+        
+        // 管理画面にリダイレクトし、アラートを表示
+        return redirect()->route('management')->with('success', 'アポ情報が登録されました。'); 
         }
 
         public function index()

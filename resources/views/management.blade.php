@@ -7,6 +7,11 @@
 <body>
     <div class="container mt-5">
         <h1 class="text-center mb-4">管理者画面</h1>
+        @if (session('success')) 
+            <div class="alert alert-success"> 
+                {{ session('success') }} 
+            </div> 
+        @endif
         <div class="row">
             <div class="col-md-3 mb-3">
                 <a href="{{ route('appointments.create') }}" class="btn btn-primary btn-block">アポ情報新規登録</a>

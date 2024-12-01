@@ -8,6 +8,7 @@
     <div class="container mt-5">
         <h1 class="text-center mb-4">アポ情報新規登録</h1>
         <form action="/appointments" method="POST">
+            @csrf
             <div class="form-group">
                 <label for="visitor_name">来客者の名前</label>
                 <input type="text" class="form-control" id="visitor_name" name="visitor_name" required>
