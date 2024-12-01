@@ -21,15 +21,31 @@ class AppointmentController extends Controller
             'visitor_name' => 'required|string|max:255', 
             'visitor_company' => 'required|string|max:255', 
             'host_name' => 'required|string|max:255', 
-            'meeting_room' => 'required|string|max:255', 
+            'room_name' => 'required|string|max:255', 
             'appointment_date' => 'required|date', 
             'purpose' => 'required|string|max:1000', 
         ]); 
 
-        
+        // 入力されたデータを変数に格納（分別） 
+        $visitorName = $request->input('visitor_name'); 
+        $visitorCompany = $request->input('visitor_company'); 
+        $hostName = $request->input('host_name'); 
+        $roomName = $request->input('room_name'); 
+        $appointmentDate = $request->input('appointment_date'); 
+        $purpose = $request->input('purpose');
+
+        // それぞれの変数を１つのクラスにまとめる
+        $appointment = new Appointment(); 
+        $appointment->visitor_name = $visitorName; 
+        $appointment->visitor_company = $visitorCompany; 
+        $appointment->host_name = $hostName; 
+        $appointment->room_name = $roomName; 
+        $appointment->appointment_date = $appointmentDate; 
+        $appointment->purpose = $purpose; 
+        $appointment->save();
             
-        // アポ情報の保存処理（例） 
-        Appointment::create($validatedData); 
+        // できたクラスをアポ情報として保存する 
+        Appointment::create($appointment); 
         
         // 管理画面にリダイレクトし、アラートを表示
         return redirect()->route('management')->with('success', 'アポ情報が登録されました。'); 

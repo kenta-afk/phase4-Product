@@ -14,10 +14,6 @@ class Appointment extends Model
 
     // 複数代入可能な属性
     protected $fillable = [
-        'visitor_name',
-        'visitor_company',
-        'host_name',
-        'meeting_room',
         'appointment_date',
         'purpose'
     ];

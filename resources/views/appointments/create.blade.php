@@ -22,8 +22,8 @@
                 <input type="text" class="form-control" id="host_name" name="host_name" required>
             </div>
             <div class="form-group">
-                <label for="meeting_room">会議室の名前</label>
-                <input type="text" class="form-control" id="meeting_room" name="meeting_room" required>
+                <label for="room_name">会議室の名前</label>
+                <input type="text" class="form-control" id="room_name" name="room_name" required>
             </div>
             <div class="form-group">
                 <label for="appointment_date">訪問日時</label>
