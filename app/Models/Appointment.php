@@ -18,7 +18,8 @@ class Appointment extends Model
         'host_id',
         'room_id',
         'appointment_date',
-        'purpose'
+        'purpose',
+        'status'
     ];
 
 }

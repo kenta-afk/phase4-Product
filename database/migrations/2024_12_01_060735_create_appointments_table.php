@@ -15,6 +15,7 @@ class CreateAppointmentsTable extends Migration
             $table->string('room_id');
             $table->dateTime('appointment_date');
             $table->text('purpose');
+            $table->boolean('status');
             $table->timestamps();
         });
     }

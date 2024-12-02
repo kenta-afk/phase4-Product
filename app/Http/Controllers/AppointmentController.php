@@ -69,6 +69,7 @@ class AppointmentController extends Controller
             'room_id' => $roomId,
             'appointment_date' => $appointmentDate,
             'purpose' => $purpose,
+            'status' => false
         ]); 
         
         // 管理画面にリダイレクトし、アラートを表示
