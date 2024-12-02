@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Appointment;
 use App\Models\Room;
 use App\Models\Host;
+use App\Models\Visitor;
 
 class AppointmentController extends Controller
 {
@@ -14,7 +15,7 @@ class AppointmentController extends Controller
     { 
         return view('appointments.create');
     } 
-    
+
     // アポ情報の保存 
     public function store(Request $request) 
     { 
@@ -39,7 +40,7 @@ class AppointmentController extends Controller
         //担当者名を社員IDに変える
         $host = Host::where('host_name', $hostName)->first();
         if ($host) {
-            $hostId = $host->host_id;
+            $hostId = $host->id;
         } else {
             //見つかんなかったときの処理をここにいれる
         }
@@ -47,23 +48,28 @@ class AppointmentController extends Controller
         //会議室名を会議室IDに変える
         $room = Room::where('room_name', $roomName)->first();
         if ($room) {
-            $roomId = $room->room_id;
+            $roomId = $room->id;
         } else {
             //見つかんなかったときの処理をここにいれる
         }
 
+        //来客者情報の保存
+        $visitor = Visitor::create([
+            'visitor_name' => $visitorName,
+            'visitor_company' => $visitorCompany
+        ]);
 
-        // それぞれの変数を１つのクラスにまとめる
-        $appointment = new Appointment(); 
-        $appointment->visitor_id = $visitorId; 
-        $appointment->host_name = $hostId; 
-        $appointment->room_id = $roomId; 
-        $appointment->appointment_date = $appointmentDate; 
-        $appointment->purpose = $purpose; 
-        $appointment->save();
+        // 来客者IDの取得
+        $visitorId = $visitor->id;
             
-        // できたクラスをアポ情報として保存する 
-        Appointment::create($appointment); 
+        // 用意した変数をまとめてアポ情報として保存する 
+        Appointment::create([
+            'visitor_id' => $visitorId,
+            'host_id' => $hostId,
+            'room_id' => $roomId,
+            'appointment_date' => $appointmentDate,
+            'purpose' => $purpose,
+        ]); 
         
         // 管理画面にリダイレクトし、アラートを表示
         return redirect()->route('management')->with('success', 'アポ情報が登録されました。'); 
