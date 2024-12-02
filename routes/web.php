@@ -17,4 +17,4 @@ Route::get('/reception', [ReceptionController::class, 'index'])->name('reception
 # Slack
 Route::post('/send-message', [SlackController::class, 'sendMessage'])->name('hosts.send');// Slackにメッセージを送信するby魚住
 Route::get('/workspace-members', [SlackController::class,'getWorkspaceMembers'])->name('hosts.get');// Slackのワークスペースメンバーを取得するby魚住
-Route::get('/messagetest', function () {return view('messagetest');});// メッセージテスト用のビューを返すby魚住
+Route::get('/messagetest', [SlackController::class, 'showMessageForm']);// メッセージテスト用のビューを返すby魚住

@@ -25,7 +25,7 @@ class SlackController extends Controller
         ]);
 
         if ($response->successful()) {
-            return response()->json(['status' => '担当者を呼び出しました'], 200);
+            return response()->json(['status' => 'call host'], 200);
         } else {
             return response()->json(['status' => 'Failed to send message', 'error' => $response->json()], 500);
         }
@@ -61,5 +61,10 @@ class SlackController extends Controller
         } else {
             return response()->json(['status' => 'Failed to retrieve members', 'error' => $response->json()], 500);
         }
+    }
+    public function showMessageForm()
+    {
+        $members = Host::all();
+        return view('messagetest', compact('members'));
     }
 }
