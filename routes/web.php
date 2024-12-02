@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SlackController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\ReceptionController;
 
@@ -12,3 +13,8 @@ Route::get('/appointments', [AppointmentController::class, 'index'])->name('appo
 
 # 受付
 Route::get('/reception', [ReceptionController::class, 'index'])->name('reception.index'); 
+
+# Slack
+Route::post('/send-message', [SlackController::class, 'sendMessage'])->name('hosts.send');// Slackにメッセージを送信するby魚住
+Route::get('/workspace-members', [SlackController::class,'getWorkspaceMembers'])->name('hosts.get');// Slackのワークスペースメンバーを取得するby魚住
+Route::get('/messagetest', [SlackController::class, 'showMessageForm']);// メッセージテスト用のビューを返すby魚住
