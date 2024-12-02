@@ -36,9 +36,9 @@
           </div>
         </div>
         <div class="sm:col-span-2">
-          <label for="meeting_room" class="block text-sm/6 font-semibold text-gray-900">会議室の名前</label>
+          <label for="room_name" class="block text-sm/6 font-semibold text-gray-900">会議室の名前</label>
           <div class="mt-2.5">
-            <input type="text" name="meeting_room" id="meeting_room" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required>
+            <input type="text" name="room_name" id="room_name" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required>
           </div>
         </div>
         <div class="sm:col-span-2">
