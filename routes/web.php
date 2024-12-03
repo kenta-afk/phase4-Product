@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SlackController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\ReceptionController;
+use App\Http\Controllers\VisitorController;
 
 Route::get('/', function () {return view('management');})->name('management');
 
@@ -18,3 +19,6 @@ Route::get('/reception', [ReceptionController::class, 'index'])->name('reception
 Route::post('/send-message', [SlackController::class, 'sendMessage'])->name('hosts.send');// Slackにメッセージを送信するby魚住
 Route::get('/workspace-members', [SlackController::class,'getWorkspaceMembers'])->name('hosts.get');// Slackのワークスペースメンバーを取得するby魚住
 Route::get('/messagetest', [SlackController::class, 'showMessageForm']);// メッセージテスト用のビューを返すby魚住
+
+#Visitor一覧表示
+Route::get('/visitors', [VisitorController::class, 'index'])->name('visitors.index'); 
