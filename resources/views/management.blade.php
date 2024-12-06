@@ -5,6 +5,16 @@
     @vite('resources/css/app.css')
 </head>
 <body>
+  <form method="POST" action="{{ route('logout') }}">
+    @csrf
+
+    <a href="route('logout')"
+            onclick="event.preventDefault();
+                        this.closest('form').submit();">
+        {{ __('Log Out') }}
+    </a>
+</form>
+
   <div class="bg-white py-24 sm:py-32">
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
       <div class="mx-auto max-w-2xl lg:text-center">
@@ -67,6 +77,7 @@
               <dt class="text-base/7 font-semibold text-gray-900">受付画面</dt>
               <dd class="mt-2 text-base/7 text-gray-600 mb-4">受付画面は、来客時にお客様が操作する画面です。</dd>
             </a>
+            
          </dl>
       </div>
     </div>
