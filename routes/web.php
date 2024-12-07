@@ -5,6 +5,7 @@ use App\Http\Controllers\SlackController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\ReceptionController;
 use App\Http\Controllers\VisitorController;
+use App\Http\Controllers\MicrosoftAuthController;
 
 Route::get('/', function () {return view('management');})->name('management');
 
@@ -22,5 +23,13 @@ Route::get('/messagetest', [SlackController::class, 'showMessageForm']);// メ�
 
 #Visitor一覧表示
 Route::get('/visitors', [VisitorController::class, 'index'])->name('visitors.index'); 
-Route::get('/auth/redirect', [MicrosoftAuthController::class, 'redirect'])->name('auth.redirect');
-Route::get('/auth/callback', [MicrosoftAuthController::class, 'callback'])->name('auth.callback');
+
+// Microsoft Graph API
+// Route::get('/outlook/get', [MicrosoftAuthController::class, 'getOutlookCalendarEvent'])->name('outlook.get');//Outlookカレンダーからイベント情報を取得するby 魚
+// Route::get('/auth/redirect', [MicrosoftAuthController::class, 'redirectToMicrosoft'])->name('auth.redirect');
+// Route::get('/auth/callback', [MicrosoftAuthController::class, 'handleMicrosoftCallback'])->name('auth.callback');
+// Route::get('/calendar/events', [MicrosoftAuthController::class, 'getOutlookCalendarEvent'])->name('calendar.events');
+
+Route::get('/auth', [MicrosoftAuthController::class, 'redirectToMicrosoft'])->name('auth.microsoft');
+Route::get('/auth/callback', [MicrosoftAuthController::class, 'handleMicrosoftCallback']);
+Route::get('/events', [MicrosoftAuthController::class, 'getCalendarEvents']);
