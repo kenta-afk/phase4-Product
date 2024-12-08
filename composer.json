@@ -16,6 +16,7 @@
         "laravel/tinker": "^2.9",
         "league/oauth2-client": "^2.7",
         "microsoft/microsoft-graph": "^2.20",
+        "thenetworg/oauth2-azure": "^2.2",
         "vluzrmos/slack-api": "*"
     },
     "require-dev": {

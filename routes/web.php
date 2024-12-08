@@ -25,11 +25,6 @@ Route::get('/messagetest', [SlackController::class, 'showMessageForm']);// メ�
 Route::get('/visitors', [VisitorController::class, 'index'])->name('visitors.index'); 
 
 // Microsoft Graph API
-// Route::get('/outlook/get', [MicrosoftAuthController::class, 'getOutlookCalendarEvent'])->name('outlook.get');//Outlookカレンダーからイベント情報を取得するby 魚
-// Route::get('/auth/redirect', [MicrosoftAuthController::class, 'redirectToMicrosoft'])->name('auth.redirect');
-// Route::get('/auth/callback', [MicrosoftAuthController::class, 'handleMicrosoftCallback'])->name('auth.callback');
-// Route::get('/calendar/events', [MicrosoftAuthController::class, 'getOutlookCalendarEvent'])->name('calendar.events');
-
-Route::get('/auth', [MicrosoftAuthController::class, 'redirectToMicrosoft'])->name('auth.microsoft');
-Route::get('/auth/callback', [MicrosoftAuthController::class, 'handleMicrosoftCallback']);
-Route::get('/events', [MicrosoftAuthController::class, 'getCalendarEvents']);
+Route::get('/auth/redirect', [MicrosoftAuthController::class, 'redirectToProvider']);
+Route::get('/auth/callback', [MicrosoftAuthController::class, 'handleProviderCallback']);
+Route::get('/calendar', [MicrosoftAuthController::class, 'getCalendar'])->middleware('auth');

@@ -3,90 +3,89 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use League\OAuth2\Client\Provider\GenericProvider;
-use Microsoft\Graph\Graph;
-use Microsoft\Graph\Model;
+use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
+use TheNetworg\OAuth2\Client\Provider\Azure;
+use GuzzleHttp\Client;
 
 class MicrosoftAuthController extends Controller
 {
-    public function redirectToMicrosoft()
+    protected $provider;
+
+    public function __construct()
     {
-        $oauthClient = new GenericProvider([
-            'clientId'                => env('OUTLOOK_CLIENT_ID'),
-            'clientSecret'            => env('OUTLOOK_CLIENT_SECRET_KEY'),
-            'redirectUri'             => env('OUTLOOK_REDIRECT_URI'),
-            'urlAuthorize'            => 'https://login.microsoftonline.com/' . env('OUTLOOK_TENANT_ID') . '/oauth2/v2.0/authorize',
-            'urlAccessToken'          => 'https://login.microsoftonline.com/' . env('OUTLOOK_TENANT_ID') . '/oauth2/v2.0/token',
+        $this->provider = new Azure([
+            'clientId'          => config('services.outlook.client_id'),
+            'clientSecret'      => config('services.outlook.client_secret'),
+            'redirectUri'       => config('services.outlook.redirect'),
+            'tenant'            => config('services.outlook.tenant_id'),
+            'urlAuthorize'      => 'https://login.microsoftonline.com/' . config('services.outlook.tenant_id') . '/oauth2/v2.0/authorize',
+            'urlAccessToken'    => 'https://login.microsoftonline.com/' . config('services.outlook.tenant_id') . '/oauth2/v2.0/token',
             'urlResourceOwnerDetails' => '',
-            'scopes'                  => 'Calendars.Read'
+            'scopes'            => ['User.Read', 'Calendars.Read'],
         ]);
-
-        $authUrl = $oauthClient->getAuthorizationUrl();
-        session(['oauth2state' => $oauthClient->getState()]);
-
-        return redirect($authUrl);
     }
 
-    public function handleMicrosoftCallback(Request $request)
+    /**
+     * ユーザーをMicrosoftの認証ページへリダイレクトします。
+     */
+    public function redirectToProvider()
     {
-        $oauthClient = new GenericProvider([
-            'clientId'                => env('OUTLOOK_CLIENT_ID'),
-            'clientSecret'            => env('OUTLOOK_CLIENT_SECRET_KEY'),
-            'redirectUri'             => env('OUTLOOK_REDIRECT_URI'),
-            'urlAuthorize'            => 'https://login.microsoftonline.com/' . env('OUTLOOK_TENANT_ID') . '/oauth2/v2.0/authorize',
-            'urlAccessToken'          => 'https://login.microsoftonline.com/' . env('OUTLOOK_TENANT_ID') . '/oauth2/v2.0/token',
-            'urlResourceOwnerDetails' => '',
-            'scopes'                  => 'Calendars.Read'
-        ]);
+        $authorizationUrl = $this->provider->getAuthorizationUrl();
+        session(['oauth2state' => $this->provider->getState()]);
+        return redirect($authorizationUrl);
+    }
 
-        if (empty($request->get('state')) || $request->get('state') !== session('oauth2state')) {
+    /**
+     * Microsoftからのコールバックを処理し、アクセストークンを取得します。
+     */
+    public function handleProviderCallback(Request $request)
+    {
+        $state = $request->input('state');
+        if (empty($state) || ($state !== session('oauth2state'))) {
             session()->forget('oauth2state');
-            return redirect()->route('auth.microsoft')->with('error', 'Invalid state');
+            exit('Invalid state');
         }
 
         try {
-            $accessToken = $oauthClient->getAccessToken('authorization_code', [
-                'code' => $request->get('code')
+            // トークンを取得
+            $token = $this->provider->getAccessToken('authorization_code', [
+                'code' => $request->input('code')
             ]);
 
-            session(['access_token' => $accessToken->getToken()]);
+            // トークンをセッションに保存
+            session(['access_token' => $token->getToken()]);
 
-            return redirect('/events');
-        } catch (\Exception $e) {
-            return redirect()->route('auth.microsoft')->with('error', 'Failed to get access token');
+            return redirect('/calendar');
+        } catch (IdentityProviderException $e) {
+            exit($e->getMessage());
         }
     }
 
-    public function getCalendarEvents()
+    /**
+     * Outlookカレンダーのイベントを取得して表示します。
+     */
+    public function getCalendar()
     {
         $accessToken = session('access_token');
 
         if (!$accessToken) {
-            return redirect()->route('auth.microsoft')->with('error', 'Not authenticated');
+            return redirect('/auth/redirect');
         }
 
-        $graph = new Graph();
-        $graph->setAccessToken($accessToken);
-
+        $client = new Client();
         try {
-            $events = $graph->createRequest('GET', '/me/events')
-                            ->setReturnType(Model\Event::class)
-                            ->execute();
+            $response = $client->request('GET', 'https://graph.microsoft.com/v1.0/me/events', [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $accessToken,
+                    'Accept'        => 'application/json',
+                ],
+            ]);
 
-            return view('events.index', ['events' => $events]);
+            $events = json_decode($response->getBody()->getContents(), true);
+
+            return view('calendar', ['events' => $events['value']]);
         } catch (\Exception $e) {
-            return redirect()->route('auth.microsoft')->with('error', 'Failed to fetch events');
+            return response()->json(['error' => 'カレンダー情報の取得に失敗しました。'], 500);
         }
-    }
-    public function debugRedirectUrl()
-    {
-        $oauthClient = new GenericProvider([
-            'clientId'                => env('OUTLOOK_CLIENT_ID'),
-            'clientSecret'            => env('OUTLOOK_CLIENT_SECRET_KEY'),
-            'redirectUri'             => env('OUTLOOK_REDIRECT_URI'),
-            'urlAuthorize'            => 'https://login.microsoftonline.com/' . env('OUTLOOK_TENANT_ID') . '/oauth2/v2.0/authorize',
-        ]);
-
-        return $oauthClient->getAuthorizationUrl();
     }
 }
