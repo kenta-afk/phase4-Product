@@ -55,7 +55,8 @@ class AppointmentController extends Controller
 
     public function index()
     {
-        $appointments = Appointment::with(['users', 'room'])->get();
+        $appointments = Appointment::where('status', false)
+        ->with(['users', 'room'])->get();
         return view('appointments.index', compact('appointments'));
     }
 
