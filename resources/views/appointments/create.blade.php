@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
     <title>アポ情報新規登録</title>
     @vite('resources/css/app.css')
+    <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet" />
 </head>
 <body>
 
@@ -30,9 +31,9 @@
           </div>
         </div>
         <div class="sm:col-span-2">
-          <label for="user_name" class="block text-sm/6 font-semibold text-gray-900">対応者の名前</label>
+          <label for="user_names" class="block text-sm/6 font-semibold text-gray-900">対応者の名前</label>
           <div class="mt-2.5">
-            <select name="user_name" id="user_name" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required>
+            <select name="user_names[]" id="user_names" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" multiple required>
               @foreach($users as $user)
                 <option value="{{ $user->name }}">{{ $user->name }}</option>
               @endforeach
@@ -66,5 +67,17 @@
         </div>
     </form>
 </div>
+
+    <!-- Tom Select JS -->
+    <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+
+    <!-- Tom Selectの初期化 -->
+    <script>
+        new TomSelect('#user_names', {
+            maxItems: null, // 選択できる最大アイテム数を設定（nullは無制限）
+            placeholder: "対応者を選択してください",
+            allowClear: true
+        });
+    </script>
 </body>
 </html>
