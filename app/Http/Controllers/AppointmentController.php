@@ -21,40 +21,38 @@ class AppointmentController extends Controller
     // アポ情報の保存 
     public function store(Request $request) 
     { 
-        //dd($request->all());
-        
         // バリデーション 
         $validatedData = $request->validate([ 
             'visitor_name' => 'required|string|max:255', 
             'visitor_company' => 'required|string|max:255', 
-            'user_name' => 'required|exists:users,name', 
+            'user_names' => 'required|array', 
+            'user_names.*' => 'exists:users,name', 
             'room_id' => 'required|exists:rooms,id', 
             'date' => 'required|date', 
             'comment' => 'required|string|max:1000', 
         ]); 
-
-        // Userのidを取得
-        $user = User::where('name', $request->input('user_name'))->first();
-
-        // 用意した変数をまとめてアポ情報として保存する 
+        
+        // アポ情報の保存
         $appointment = Appointment::create([
-            'status' => false,
-            'room_id' => $request->input('room_id'),
             'visitor_name' => $request->input('visitor_name'),
             'visitor_company' => $request->input('visitor_company'),
+            'room_id' => $request->input('room_id'),
             'date' => $request->input('date'),
             'comment' => $request->input('comment'),
-        ]); 
+            'status' => false
+        ]);
 
-        // 中間テーブルに保存
-        $appointment->users()->attach($user->id);
-        
+        // 対応者のIDを取得し、中間テーブルに保存
+        $userIds = User::whereIn('name', $request->input('user_names'))->pluck('id');
+        $appointment->users()->attach($userIds);
+
         // 管理画面にリダイレクトし、アラートを表示
         return redirect()->route('management')->with('success', 'アポ情報が登録されました。'); 
     }
 
     public function index()
     {
+        // すべてのアポ情報を取得
         $appointments = Appointment::with(['users', 'room'])->get();
         return view('appointments.index', compact('appointments'));
     }
