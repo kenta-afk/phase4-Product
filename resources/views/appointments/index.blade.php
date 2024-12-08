@@ -10,7 +10,6 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>来客者の名前</th>
                     <th>来客者の所属</th>
                     <th>対応者の名前</th>
@@ -23,13 +22,12 @@
             <tbody>
                 @foreach ($appointments as $appointment)
                     <tr>
-                        <td>{{ $appointment['id'] }}</td>
-                        <td>{{ $appointment['visitor_name'] }}</td>
-                        <td>{{ $appointment['visitor_company'] }}</td>
-                        <td>{{ $appointment['host_name'] }}</td>
-                        <td>{{ $appointment['meeting_room'] }}</td>
-                        <td>{{ $appointment['appointment_date'] }}</td>
-                        <td>{{ $appointment['purpose'] }}</td>
+                        <td>{{ $appointment->visitor_name }}</td>
+                        <td>{{ $appointment->visitor_company }}</td>
+                        <td>{{ $appointment->users->first()->name }}</td>
+                        <td>{{ $appointment->room->room_name }}</td>
+                        <td>{{ $appointment->date }}</td>
+                        <td>{{ $appointment->comment }}</td>
                         <td>
                             <a href="#" class="btn btn-sm btn-info">編集</a>
                             <a href="#" class="btn btn-sm btn-danger">削除</a>

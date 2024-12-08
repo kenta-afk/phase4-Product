@@ -30,27 +30,35 @@
           </div>
         </div>
         <div class="sm:col-span-2">
-          <label for="host_name" class="block text-sm/6 font-semibold text-gray-900">対応者の名前</label>
+          <label for="user_name" class="block text-sm/6 font-semibold text-gray-900">対応者の名前</label>
           <div class="mt-2.5">
-            <input type="text" name="host_name" id="host_name" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required>
+            <select name="user_name" id="user_name" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required>
+              @foreach($users as $user)
+                <option value="{{ $user->name }}">{{ $user->name }}</option>
+              @endforeach
+            </select>
           </div>
         </div>
         <div class="sm:col-span-2">
-          <label for="room_name" class="block text-sm/6 font-semibold text-gray-900">会議室の名前</label>
+          <label for="room_id" class="block text-sm/6 font-semibold text-gray-900">会議室の名前</label>
           <div class="mt-2.5">
-            <input type="text" name="room_name" id="room_name" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required>
+            <select name="room_id" id="room_id" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required>
+              @foreach($rooms as $room)
+                <option value="{{ $room->id }}">{{ $room->room_name }}</option>
+              @endforeach
+            </select>
           </div>
         </div>
         <div class="sm:col-span-2">
-          <label for="appointment_date" class="block text-sm/6 font-semibold text-gray-900">訪問日時</label>
+          <label for="date" class="block text-sm/6 font-semibold text-gray-900">訪問日時</label>
           <div class="mt-2.5">
-            <input type="datetime-local" name="appointment_date" id="appointment_date" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required>
+            <input type="datetime-local" name="date" id="date" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required>
           </div>
         </div>
         <div class="sm:col-span-2">
           <label for="purpose" class="block text-sm/6 font-semibold text-gray-900">要件</label>
           <div class="mt-2.5">
-            <textarea name="purpose" id="purpose" rows="4" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required></textarea>
+            <textarea name="comment" id="comment" rows="4" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required></textarea>
           </div>
         </div>
         <div class="sm:col-span-2 mt-10">

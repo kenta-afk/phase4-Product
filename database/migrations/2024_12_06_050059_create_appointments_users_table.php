@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('hosts', function (Blueprint $table) {
+        Schema::create('appointments_users', function (Blueprint $table) {
             $table->id();
-            $table->string('host_name');
-            $table->string('slack_id');
+            $table->foreignId('appointment_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('hosts');
+        Schema::dropIfExists('appointment_user');
     }
 };
