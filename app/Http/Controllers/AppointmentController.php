@@ -60,4 +60,12 @@ class AppointmentController extends Controller
         return view('appointments.index', compact('appointments'));
     }
 
+    public function destroy($id)
+    {
+    $appointment = Appointment::findOrFail($id);
+    $appointment->delete();
+
+    return redirect()->route('appointments.index')->with('success', 'アポ情報は削除されました');
+    }
+
 }
