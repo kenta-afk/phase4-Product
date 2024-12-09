@@ -63,24 +63,24 @@ class MicrosoftAuthController extends Controller
                 'code' => $request->input('code')
             ]);
             // トークン取得後
-            \Log::info("Access Token obtained."); 
-            // トークン情報をログに記録（デバッグ用）
-            \Log::info("Access Token: " . $token->getToken());
-            \Log::info("Token Scopes: " . implode(', ', $token->getValues()['scp'] ?? []));
+            // \Log::info("Access Token obtained."); 
+            // // トークン情報をログに記録（デバッグ用）
+            // \Log::info("Access Token: " . $token->getToken());
+            // \Log::info("Token Scopes: " . implode(', ', $token->getValues()['scp'] ?? []));
 
             // トークンのaudを確認（デバッグ用）
-            $decodedToken = json_decode(base64_decode(str_replace('_', '/', str_replace('-', '+', explode('.', $token->getToken())[1]))), true);
-            \Log::info("Token Audience (aud): " . ($decodedToken['aud'] ?? 'N/A'));
+            // $decodedToken = json_decode(base64_decode(str_replace('_', '/', str_replace('-', '+', explode('.', $token->getToken())[1]))), true);
+            // \Log::info("Token Audience (aud): " . ($decodedToken['aud'] ?? 'N/A'));
 
-            // ユーザー情報取得前
-            \Log::info("Fetching resource owner details from: " . $this->provider->getResourceOwnerDetailsUrl($token));
+            // // ユーザー情報取得前
+            // \Log::info("Fetching resource owner details from: " . $this->provider->getResourceOwnerDetailsUrl($token));
 
             // ユーザー情報を取得
             $user = $this->provider->getResourceOwner($token);
             $userData = $user->toArray();
 
-            // ユーザー情報取得後
-            \Log::info("Resource owner details fetched successfully.");
+            // // ユーザー情報取得後
+            // \Log::info("Resource owner details fetched successfully.");
             
             // メールアドレスを取得（複数のキーをチェック）
             $email = $userData['userPrincipalName'] ?? $userData['mail'] ?? $userData['email'] ?? $userData['preferred_username'] ?? null;
@@ -122,11 +122,7 @@ class MicrosoftAuthController extends Controller
     public function getCalendar()
     {
         $accessToken = session('access_token');
-    //     dd(config('services.outlook.client_id'),
-    //     config('services.outlook.client_secret'),
-    //     config('services.outlook.redirect'),
-    //     config('services.outlook.tenant_id'),
-    // $accessToken);
+
         if (!$accessToken) {
             return redirect('/auth/redirect')->with('error', '認証が必要です。');
         }

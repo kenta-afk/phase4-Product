@@ -36,9 +36,9 @@ return [
     ],
 
     'outlook' => [
-        'tenant_id' => env('OUTLOOK_TENANT_ID'),
+        'tenant_id' => 'common',
         'client_id' => env('OUTLOOK_CLIENT_ID'),
-        'client_secret' => env('OUTLOOK_CLIENT_SECRET_KEY'),
+        'client_secret' => env('OUTLOOK_CLIENT_VALUE'),
         'redirect' => env('OUTLOOK_REDIRECT_URI'),
     ],
 
