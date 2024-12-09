@@ -14,9 +14,9 @@ class RoomsTableSeeder extends Seeder
     public function run(): void
     {
         DB::table('rooms')->insert([
-            ['room_name' => '会議室A'],
-            ['room_name' => '会議室B'],
-            ['room_name' => '会議室C'],
+            ['name' => '会議室A'],
+            ['name' => '会議室B'],
+            ['name' => '会議室C'],
         ]);
     }
 }
