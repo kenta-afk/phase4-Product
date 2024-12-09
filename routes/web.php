@@ -17,10 +17,6 @@ Route::get('/management', function () {
     return view('management');
 })->middleware(['auth', 'verified'])->name('management');
 
-Route::get('/management', function () {
-    return view('management');
-})->middleware(['auth', 'verified'])->name('management');
-
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -42,10 +38,13 @@ Route::middleware('auth')->group(function () {
     #Visitor一覧表示
     Route::get('/visitors', [VisitorController::class, 'index'])->name('visitors.index'); 
 
-// Microsoft Graph API
-Route::get('/auth/redirect', [MicrosoftAuthController::class, 'redirectToProvider']);
-Route::get('/auth/callback', [MicrosoftAuthController::class, 'handleProviderCallback']);
-Route::get('/calendar', [MicrosoftAuthController::class, 'getCalendar'])->middleware('auth');
+    // Microsoft Graph API
+    Route::get('/auth/redirect', [MicrosoftAuthController::class, 'redirectToProvider']);
+    Route::get('/auth/callback', [MicrosoftAuthController::class, 'handleProviderCallback']);
+    Route::get('/calendar', [MicrosoftAuthController::class, 'getCalendar']);
 });
 
+Route::get('/env', function () {
+    return env('OUTLOOK_CLIENT_ID');
+});
 require __DIR__.'/auth.php';
