@@ -39,7 +39,10 @@
                         <td>{{ $appointment->date }}</td>
                         <td>{{ $appointment->comment }}</td>
                         <td>
-                            <a href="#" class="btn btn-sm btn-info">編集</a>
+                            <form action="{{ route('appointments.edit', $appointment->id) }}" method="GET" style="display:inline;"> 
+                                @csrf
+                                <button type="submit" class="btn btn-sm btn-info">編集</button>
+                            </form>
                             <form action="{{ route('appointments.destroy', $appointment->id) }}" method="POST" style="display:inline;" onsubmit="return confirmDeletion();">
                                 @csrf
                                 @method('DELETE')

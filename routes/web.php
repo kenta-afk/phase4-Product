@@ -26,6 +26,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/appointments', [AppointmentController::class, 'store'])->name('appointments.store'); #アポ情報を保存by米田
     Route::get('/appointments', [AppointmentController::class, 'index'])->name('appointments.index'); #アポ情報一覧表示by米田
     Route::delete('/appointments/{id}', [AppointmentController::class, 'destroy'])->name('appointments.destroy'); #アポ情報削除機能by米田
+    Route::get('/appointments.edit/{id}', [AppointmentController::class, 'edit'])->name('appointments.edit'); #アポ情報編集画面に移動by米田
+    Route::post('/appointments/{id}', [AppointmentController::class, 'update'])->name('appointments.update'); #アポ情報編集完了by米田
+
 
 
     # 受付
