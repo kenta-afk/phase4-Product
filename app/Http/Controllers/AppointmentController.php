@@ -103,4 +103,12 @@ class AppointmentController extends Controller
         return redirect()->route('appointments.index')->with('success', 'アポ情報は更新されました');
     }
 
+    public function visited($id)
+    {
+        $appointment = Appointment::findOrFail($id);
+        $appointment->update(['status' => true]);
+
+        return redirect()->route('appointments.index')->with('success', 'アポ情報は来客者情報に移動しました');
+    }
+
 }

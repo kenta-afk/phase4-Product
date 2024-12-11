@@ -25,7 +25,7 @@
                         <td>{{ $appointment->visitor_name }}</td>
                         <td>{{ $appointment->visitor_company }}</td>
                         <td>{{ $appointment->users->first()->name }}</td>
-                        <td>{{ $appointment->room->room_name }}</td>
+                        <td>{{ $appointment->room->name }}</td>
                         <td>{{ $appointment->date }}</td>
                         <td>{{ $appointment->comment }}</td>
                         <td>

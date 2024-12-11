@@ -35,7 +35,7 @@
                         <td>{{ $appointment->visitor_name }}</td>
                         <td>{{ $appointment->visitor_company }}</td>
                         <td>{{ $appointment->users->first()->name }}</td>
-                        <td>{{ $appointment->room->room_name }}</td>
+                        <td>{{ $appointment->room->name }}</td>
                         <td>{{ $appointment->date }}</td>
                         <td>{{ $appointment->comment }}</td>
                         <td>
@@ -47,6 +47,10 @@
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-sm btn-danger">削除</button>
+                            </form>
+                            <form action="{{ route('appointments.visited', $appointment->id) }}" method="GET" style="display:inline;">
+                                @csrf
+                                <button type="submit" class="btn btn-sm btn-success">来客済にする</button>
                             </form>
                         </td>
                     </tr>
