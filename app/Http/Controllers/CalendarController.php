@@ -64,7 +64,7 @@ class CalendarController extends Controller
     {
         $calendarId = $request->input('calendar_id');
 
-        return view('add_event', ['calendar_id' => $calendarId]);
+        return view('calendar.add_event', ['calendar_id' => $calendarId]);
     }
 
     /**
@@ -257,7 +257,7 @@ class CalendarController extends Controller
             Log::info("Total events fetched: " . count($events));
 
             // カレンダー詳細ビューにイベント一覧を渡す
-            return view('calendar', ['events' => $events, 'calendar_id' => $calendar_id]);
+            return view('calendar.calendar', ['events' => $events, 'calendar_id' => $calendar_id]);
         } catch (\GuzzleHttp\Exception\ClientException $e) {
             $response = $e->getResponse();
             $statusCode = $response->getStatusCode();

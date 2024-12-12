@@ -146,7 +146,7 @@ class MicrosoftAuthController extends Controller
 
             \Log::info("Total calendars fetched: " . count($calendars));
 
-            return view('calendars', ['calendars' => $calendars]);
+            return view('calendar.calendars', ['calendars' => $calendars]);
         } catch (\Exception $e) {
             \Log::error("Error fetching calendars: " . $e->getMessage());
             return response()->json(['error' => 'カレンダーの取得に失敗しました。'], 500);
