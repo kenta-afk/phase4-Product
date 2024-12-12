@@ -3,10 +3,20 @@
 <head>
     <title>アポ情報一覧</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script>
+        function confirmDeletion() {
+            return confirm('本当に削除しますか？');
+        }
+    </script>
 </head>
 <body>
     <div class="container mt-5">
         <h1 class="text-center mb-4">アポ情報一覧</h1>
+        @if (session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -24,13 +34,24 @@
                     <tr>
                         <td>{{ $appointment->visitor_name }}</td>
                         <td>{{ $appointment->visitor_company }}</td>
-                        <td>{{ $appointment->users->first()->name }}</td>
-                        <td>{{ $appointment->room->room_name }}</td>
+                        <td>
+                            @foreach ($appointment->users as $user)
+                                {{ $user->name }}@if (!$loop->last), @endif
+                            @endforeach
+                        </td>
+                        <td>{{ $appointment->room->name }}</td>
                         <td>{{ $appointment->date }}</td>
                         <td>{{ $appointment->comment }}</td>
                         <td>
-                            <a href="#" class="btn btn-sm btn-info">編集</a>
-                            <a href="#" class="btn btn-sm btn-danger">削除</a>
+                            <form action="{{ route('appointments.edit', $appointment->id) }}" method="GET" style="display:inline;"> 
+                                @csrf
+                                <button type="submit" class="btn btn-sm btn-info">編集</button>
+                            </form>
+                            <form action="{{ route('appointments.destroy', $appointment->id) }}" method="POST" style="display:inline;" onsubmit="return confirmDeletion();">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-danger">削除</button>
+                            </form>
                         </td>
                     </tr>
                 @endforeach

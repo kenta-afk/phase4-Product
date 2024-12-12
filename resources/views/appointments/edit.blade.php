@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html>
 <head>
-    <title>アポ情報新規登録</title>
+    <title>アポ情報編集</title>
     @vite('resources/css/app.css')
-    <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet" />
 </head>
 <body>
 
@@ -13,29 +12,32 @@
 
     </div>
     <div class="mx-auto max-w-2xl text-center">
-      <h2 class="text-balance text-4xl font-semibold tracking-tight text-gray-900 sm:text-5xl">アポイントメント登録</h2>
+      <h2 class="text-balance text-4xl font-semibold tracking-tight text-gray-900 sm:text-5xl">アポ情報編集</h2>
     </div>
-    <form action="/appointments" method="POST" class="mx-auto mt-16 max-w-xl sm:mt-20">
-    @csrf
+    <form action="{{ route('appointments.update', $appointment->id) }}" method="POST" class="mx-auto mt-16 max-w-xl sm:mt-20">
+      @csrf
+      @method('POST')
       <div class="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
         <div class="sm:col-span-2">
           <label for="visitor_name" class="block text-sm/6 font-semibold text-gray-900">来客者の名前</label>
           <div class="mt-2.5">
-            <input type="text" name="visitor_name" id="visitor_name" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required>
+            <input type="text" name="visitor_name" id="visitor_name" value="{{ $appointment->visitor_name }}" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required>
           </div>
         </div>
         <div class="sm:col-span-2">
           <label for="visitor_company" class="block text-sm/6 font-semibold text-gray-900">来客者の所属</label>
           <div class="mt-2.5">
-            <input type="text" name="visitor_company" id="visitor_company" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required>
+            <input type="text" name="visitor_company" id="visitor_company" value="{{ $appointment->visitor_company }}" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required>
           </div>
         </div>
         <div class="sm:col-span-2">
-          <label for="user_names" class="block text-sm/6 font-semibold text-gray-900">対応者の名前</label>
+          <label for="user_name" class="block text-sm/6 font-semibold text-gray-900">対応者の名前</label>
           <div class="mt-2.5">
-            <select name="user_names[]" id="user_names" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" multiple required>
+            <select name="user_name" id="user_name" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required>
               @foreach($users as $user)
-                <option value="{{ $user->name }}">{{ $user->name }}</option>
+              <option value="{{ $user->name }}" {{ $appointment->users->first()->name == $user->name ? 'selected' : '' }}>
+                {{ $user->name }}
+              </option>
               @endforeach
             </select>
           </div>
@@ -45,7 +47,9 @@
           <div class="mt-2.5">
             <select name="room_id" id="room_id" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required>
               @foreach($rooms as $room)
-                <option value="{{ $room->id }}">{{ $room->name }}</option>
+                <option value="{{ $room->id }}" {{ $appointment->room_id == $room->id ? 'selected' : '' }}>
+                  {{ $room->name }}
+                </option>
               @endforeach
             </select>
           </div>
@@ -53,7 +57,7 @@
         <div class="sm:col-span-2">
           <label for="date" class="block text-sm/6 font-semibold text-gray-900">訪問日時</label>
           <div class="mt-2.5">
-            <input type="datetime-local" name="date" id="date" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required>
+            <input type="datetime-local" name="date" id="date" value="{{ $appointment->date }}" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required>
           </div>
         </div>
         <div class="sm:col-span-2">
@@ -63,21 +67,9 @@
           </div>
         </div>
         <div class="sm:col-span-2 mt-10">
-          <button type="submit" class="block w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">登録</button>
+          <button type="submit" class="block w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">更新</button>
         </div>
     </form>
 </div>
-
-    <!-- Tom Select JS -->
-    <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
-
-    <!-- Tom Selectの初期化 -->
-    <script>
-        new TomSelect('#user_names', {
-            maxItems: null, // 選択できる最大アイテム数を設定（nullは無制限）
-            placeholder: "対応者を選択してください",
-            allowClear: true
-        });
-    </script>
 </body>
 </html>

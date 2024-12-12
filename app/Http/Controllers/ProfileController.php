@@ -38,6 +38,22 @@ class ProfileController extends Controller
     }
 
     /**
+     * Update the user's role.
+     */
+    public function updateRole(Request $request)
+    {
+        $request->validate([
+            'role' => 'required|boolean',
+        ]);
+
+        $user = $request->user();
+        $user->role = $request->input('role');
+        $user->save();
+
+        return response()->json(['success' => true]);
+    }
+
+    /**
      * Delete the user's account.
      */
     public function destroy(Request $request): RedirectResponse

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->string('slack_id')->nullable();
+            $table->boolean('role')->default(0);
             $table->timestamps();
         });
 
