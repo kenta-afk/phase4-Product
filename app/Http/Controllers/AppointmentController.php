@@ -59,4 +59,47 @@ class AppointmentController extends Controller
         return view('appointments.index', compact('appointments'));
     }
 
+    public function destroy($id)
+    {
+    $appointment = Appointment::findOrFail($id);
+    $appointment->delete();
+
+    return redirect()->route('appointments.index')->with('success', 'アポ情報は削除されました');
+    }
+
+    public function edit($id) {
+        # アポ情報編集画面に移動
+        $appointment = Appointment::findOrFail($id);
+        $users = User::all();
+        $rooms = Room::all();
+        return view('appointments.edit', compact('appointment', 'users', 'rooms'));
+    }
+
+    public function update(Request $request, $id) {
+        $validatedData = $request->validate([ 
+            'visitor_name' => 'required|string|max:255', 
+            'visitor_company' => 'required|string|max:255', 
+            'user_name' => 'required|exists:users,name', 
+            'room_id' => 'required|exists:rooms,id', 
+            'date' => 'required|date', 
+            'comment' => 'required|string|max:1000', 
+        ]);
+
+        # アポ情報編集
+        $appointment = Appointment::findOrFail($id);
+        $user = User::where('name', $request->input('user_name'))->first();
+
+        $appointment->update([
+            'visitor_name' => $request->input('visitor_name'), 
+            'visitor_company' => $request->input('visitor_company'), 
+            'room_id' => $request->input('room_id'), 
+            'date' => $request->input('date'), 
+            'comment' => $request->input('comment')
+        ]);
+
+        $appointment->users()->sync([$user->id]);
+
+        return redirect()->route('appointments.index')->with('success', 'アポ情報は更新されました');
+    }
+
 }
