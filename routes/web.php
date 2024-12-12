@@ -7,7 +7,7 @@ use App\Http\Controllers\ReceptionController;
 use App\Http\Controllers\SlackController;
 use App\Http\Controllers\VisitorController;
 use App\Http\Controllers\MicrosoftAuthController;
-
+use App\Http\Controllers\CalendarController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -37,14 +37,34 @@ Route::middleware('auth')->group(function () {
 
     #Visitor一覧表示
     Route::get('/visitors', [VisitorController::class, 'index'])->name('visitors.index'); 
-
+    
     // Microsoft Graph API
+    //認証関係
     Route::get('/auth/redirect', [MicrosoftAuthController::class, 'redirectToProvider']);
     Route::get('/auth/callback', [MicrosoftAuthController::class, 'handleProviderCallback']);
-    Route::get('/calendar', [MicrosoftAuthController::class, 'getCalendar']);
+    //カレンダー関係
+    // カレンダー一覧表示ルート
+    Route::get('/calendars', [MicrosoftAuthController::class, 'listCalendars'])->name('calendar.list');
+    Route::get('/calendar', function () {
+        return redirect('/calendars');
+    });
+
+    // 特定のカレンダーのイベント一覧表示ルート
+    Route::get('/calendar/{calendar_id}/events', [CalendarController::class, 'getEvents'])->name('calendar.events');
+
+    // イベント追加フォーム表示ルート
+    Route::get('/calendar/add-event-form', [CalendarController::class, 'showAddEventForm'])->name('calendar.addEventForm');
+
+    // イベント追加処理ルート
+    Route::post('/calendar/add-event', [CalendarController::class, 'addEvent'])->name('calendar.addEvent');
+
+    // 共有カレンダー作成ルート
+    Route::get('/calendar/create-shared', [CalendarController::class, 'createSharedCalendar'])->name('calendar.createShared');
+
+    // カレンダー共有処理ルート
+    Route::post('/calendar/share', [CalendarController::class, 'shareCalendar'])->name('calendar.share');
+
+
 });
 
-Route::get('/env', function () {
-    return env('OUTLOOK_CLIENT_ID');
-});
 require __DIR__.'/auth.php';

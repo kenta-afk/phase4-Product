@@ -8,6 +8,7 @@ use TheNetworg\OAuth2\Client\Provider\Azure;
 use GuzzleHttp\Client;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class MicrosoftAuthController extends Controller
 {
@@ -28,9 +29,10 @@ class MicrosoftAuthController extends Controller
                 'profile',
                 'offline_access',
                 'https://graph.microsoft.com/User.Read',
-                'https://graph.microsoft.com/Calendars.Read'
+                'https://graph.microsoft.com/Calendars.Read',
+                'https://graph.microsoft.com/Calendars.ReadWrite'
             ],
-            'defaultEndPointVersion'  => '2.0' // これを追加
+            'defaultEndPointVersion'  => '2.0'
         ]);
     }   
     
@@ -62,27 +64,12 @@ class MicrosoftAuthController extends Controller
             $token = $this->provider->getAccessToken('authorization_code', [
                 'code' => $request->input('code')
             ]);
-            // トークン取得後
-            // \Log::info("Access Token obtained."); 
-            // // トークン情報をログに記録（デバッグ用）
-            // \Log::info("Access Token: " . $token->getToken());
-            // \Log::info("Token Scopes: " . implode(', ', $token->getValues()['scp'] ?? []));
-
-            // トークンのaudを確認（デバッグ用）
-            // $decodedToken = json_decode(base64_decode(str_replace('_', '/', str_replace('-', '+', explode('.', $token->getToken())[1]))), true);
-            // \Log::info("Token Audience (aud): " . ($decodedToken['aud'] ?? 'N/A'));
-
-            // // ユーザー情報取得前
-            // \Log::info("Fetching resource owner details from: " . $this->provider->getResourceOwnerDetailsUrl($token));
 
             // ユーザー情報を取得
             $user = $this->provider->getResourceOwner($token);
             $userData = $user->toArray();
 
-            // // ユーザー情報取得後
-            // \Log::info("Resource owner details fetched successfully.");
-            
-            // メールアドレスを取得（複数のキーをチェック）
+            // メールアドレスを取得
             $email = $userData['userPrincipalName'] ?? $userData['mail'] ?? $userData['email'] ?? $userData['preferred_username'] ?? null;
 
             if (!$email) {
@@ -108,7 +95,7 @@ class MicrosoftAuthController extends Controller
             // アクセストークンをセッションに保存
             session(['access_token' => $token->getToken()]);
 
-            return redirect('/calendar')->with('success', '認証に成功しました。');
+            return redirect('/calendars')->with('success', '認証に成功しました。');
         } catch (IdentityProviderException $e) {
             \Log::error("Microsoft Authentication Error: " . $e->getMessage());
             \Log::error("Error Details: " . $e->getTraceAsString()); // デバッグ用
@@ -117,9 +104,9 @@ class MicrosoftAuthController extends Controller
     }
 
     /**
-     * Outlookカレンダーのイベントを取得して表示します。
+     * カレンダー一覧を取得して表示します。
      */
-    public function getCalendar()
+    public function listCalendars()
     {
         $accessToken = session('access_token');
 
@@ -128,40 +115,41 @@ class MicrosoftAuthController extends Controller
         }
 
         $client = new Client();
+        $calendars = [];
+
+        $url = "https://graph.microsoft.com/v1.0/me/calendars?\$top=100";
+
         try {
-            // リクエスト内容をログに出力（デバッグ用）
-            \Log::info("Graph API Request Headers: " . json_encode([
-                'Authorization' => 'Bearer ' . $accessToken,
-                'Accept'        => 'application/json',
-            ]));
+            while ($url) {
+                \Log::info("Fetching calendars from: " . $url);
+                $response = $client->request('GET', $url, [
+                    'headers' => [
+                        'Authorization' => 'Bearer ' . $accessToken,
+                        'Accept'        => 'application/json',
+                    ],
+                ]);
 
-            // 自分自身のカレンダーイベントを取得
-            $response = $client->request('GET', "https://graph.microsoft.com/v1.0/me/events", [
-                'headers' => [
-                    'Authorization' => 'Bearer ' . $accessToken,
-                    'Accept'        => 'application/json',
-                ],
-            ]);
+                $data = json_decode($response->getBody()->getContents(), true);
+                \Log::info("Fetched calendars data: " . json_encode($data));
 
-            $events = json_decode($response->getBody()->getContents(), true);
+                if (isset($data['value'])) {
+                    $calendars = array_merge($calendars, $data['value']);
+                    \Log::info("Fetched " . count($data['value']) . " calendars.");
+                }
 
-            return view('calendar', ['events' => $events['value']]);
-        } catch (\GuzzleHttp\Exception\ClientException $e) {
-            // クライアントエラー（4xx）の場合
-            $response = $e->getResponse();
-            $statusCode = $response->getStatusCode();
-            $body = json_decode($response->getBody()->getContents(), true);
-            \Log::error("Microsoft Graph API エラー: {$statusCode} - " . json_encode($body));
+                // 次のページが存在するか確認
+                $url = isset($data['@odata.nextLink']) ? $data['@odata.nextLink'] : null;
+                if ($url) {
+                    \Log::info("Next calendars page URL: " . $url);
+                }
+            }
 
-            return response()->json(['error' => 'カレンダー情報の取得に失敗しました。', 'details' => $body], $statusCode);
-        } catch (\GuzzleHttp\Exception\ServerException $e) {
-            // サーバーエラー（5xx）の場合
-            \Log::error("Microsoft Graph API サーバーエラー: " . $e->getMessage());
-            return response()->json(['error' => 'カレンダー情報の取得に失敗しました。'], 500);
+            \Log::info("Total calendars fetched: " . count($calendars));
+
+            return view('calendars', ['calendars' => $calendars]);
         } catch (\Exception $e) {
-            // その他のエラー
-            \Log::error("予期せぬエラー: " . $e->getMessage());
-            return response()->json(['error' => 'カレンダー情報の取得に失敗しました。'], 500);
+            \Log::error("Error fetching calendars: " . $e->getMessage());
+            return response()->json(['error' => 'カレンダーの取得に失敗しました。'], 500);
         }
     }
 }
