@@ -95,7 +95,7 @@
               response.appointments.forEach(function(appointment) {
                 $('#search-results').append(`
                   <li class="mb-2">
-                    <a href="#" class="block p-4 bg-white rounded-lg shadow hover:bg-gray-100 transition" data-id="${appointment.id}">
+                    <a href="#" class="block p-4 bg-white rounded-lg shadow hover:bg-gray-100 transition appointment-link" data-id="${appointment.id}">
                       <div class="text-lg font-semibold text-gray-900">${appointment.visitor_name}</div>
                       <div class="text-sm text-gray-600">${appointment.date}</div>
                     </a>
@@ -125,7 +125,7 @@
           success: function(response) {
             setTimeout(function() {
               overlay.hide();
-            }, 7000); // 7秒後にオーバーレイを非表示にする
+            }, 7000); 
           }
         });
       });
