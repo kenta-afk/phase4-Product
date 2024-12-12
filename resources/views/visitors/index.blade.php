@@ -49,6 +49,7 @@
                 @endforeach
             </tbody>
         </table>
+        <a href="{{ route('management') }}" class="btn btn-primary float-right fixed-bottom">ホーム画面へ戻る</a>
     </div>
 </body>
 </html>

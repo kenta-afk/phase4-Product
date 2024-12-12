@@ -7,6 +7,9 @@
         function confirmDeletion() {
             return confirm('本当に削除しますか？');
         }
+        function confirmVisited() {
+            return confirm('来客済としてアポ情報から来客者情報に移動しますか？')
+        }
     </script>
 </head>
 <body>
@@ -48,7 +51,7 @@
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-sm btn-danger">削除</button>
                             </form>
-                            <form action="{{ route('appointments.visited', $appointment->id) }}" method="GET" style="display:inline;">
+                            <form action="{{ route('appointments.visited', $appointment->id) }}" method="GET" style="display:inline;" onsubmit="return confirmVisited();">
                                 @csrf
                                 <button type="submit" class="btn btn-sm btn-success">来客済にする</button>
                             </form>
@@ -57,6 +60,7 @@
                 @endforeach
             </tbody>
         </table>
+        <a href="{{ route('management') }}" class="btn btn-primary float-right fixed-bottom">ホーム画面へ戻る</a>
     </div>
 </body>
 </html>
