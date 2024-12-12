@@ -32,6 +32,26 @@ class SlackController extends Controller
         }
     }
 
+    public function sendMessagesToRoleUsers()
+    {
+        $users = User::where('role', 1)->get();
+        $token = $this->slackToken;
+        $channelId = env('CHANNEL_ID'); // 呼び出し用のチャンネルIDを指定
+
+        foreach ($users as $user) {
+            $response = Http::withToken($token)->post('https://slack.com/api/chat.postMessage', [
+                'channel' => $channelId,
+                'text' => '<@'.$user->slack_id.'> さん、来客があります。'
+            ]);
+
+            if (!$response->successful()) {
+                return response()->json(['status' => 'Failed to send message', 'error' => $response->json()], 500);
+            }
+        }
+
+        return response()->json(['success' => true]);
+    }
+
     public function getWorkspaceMembers()
     {
         $token = $this->slackToken;

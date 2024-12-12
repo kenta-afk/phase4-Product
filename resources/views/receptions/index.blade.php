@@ -76,9 +76,26 @@
         event.preventDefault();
         var overlay = document.getElementById('overlay');
         overlay.style.display = 'flex';
-        setTimeout(function() {
-            overlay.style.display = 'none';
-        }, 7000);
+
+        fetch('{{ route('send.message.to.role.users') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        }).then(response => response.json())
+          .then(data => {
+              if (data.success) {
+                  alert('Messages sent successfully');
+              } else {
+                  alert('Failed to send messages');
+              }
+              overlay.style.display = 'none';
+          }).catch(error => {
+              console.error('Error:', error);
+              alert('An error occurred');
+              overlay.style.display = 'none';
+          });
     });
   </script>
 </body>
