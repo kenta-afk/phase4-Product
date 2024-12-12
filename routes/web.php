@@ -54,6 +54,7 @@ Route::middleware('auth')->group(function () {
     //認証関係
     Route::get('/auth/redirect', [MicrosoftAuthController::class, 'redirectToProvider']);
     Route::get('/auth/callback', [MicrosoftAuthController::class, 'handleProviderCallback']);
+    
     //カレンダー関係
     // カレンダー一覧表示ルート
     Route::get('/calendars', [MicrosoftAuthController::class, 'listCalendars'])->name('calendar.list');

@@ -93,9 +93,15 @@ class MicrosoftAuthController extends Controller
             Auth::login($appUser, true);
 
             // アクセストークンをセッションに保存
-            session(['access_token' => $token->getToken()]);
+            // セッションに必要な情報を保存
+            session([
+                'access_token' => $token->getToken(),
+                'refresh_token' => $token->getRefreshToken(),
+                'expires' => $token->getExpires(),
+            ]);
+            
 
-            return redirect('/calendars')->with('success', '認証に成功しました。');
+            return redirect('appointments.create')->with('success', '認証に成功しました。');
         } catch (IdentityProviderException $e) {
             \Log::error("Microsoft Authentication Error: " . $e->getMessage());
             \Log::error("Error Details: " . $e->getTraceAsString()); // デバッグ用
