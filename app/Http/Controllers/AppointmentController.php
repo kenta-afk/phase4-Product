@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Appointment;
 use App\Models\Room;
 use App\Models\User;
-
+use App\Http\Controllers\CalendarController;
 
 class AppointmentController extends Controller
 {
@@ -45,6 +45,17 @@ class AppointmentController extends Controller
         // 対応者のIDを取得し、中間テーブルに保存
         $userIds = User::whereIn('name', $request->input('user_names'))->pluck('id');
         $appointment->users()->attach($userIds);
+
+        //共有カレンダーにアポイントメントを登録
+        //calendarControllerにリクエストを送信//$comment, $date, $room_id, $visitor_name,$visitor_company
+        $calendarController = new CalendarController();
+        $result = $calendarController->addEventToSharedCalendar(
+            $validatedData['comment'],
+            $validatedData['date'],
+            $validatedData['room_id'],
+            $validatedData['visitor_name'],
+            $validatedData['visitor_company']
+        );
 
         // 管理画面にリダイレクトし、アラートを表示
         return redirect()->route('management')->with('success', 'アポ情報が登録されました。'); 

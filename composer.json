@@ -10,9 +10,13 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "guzzlehttp/guzzle": "*",
+        "guzzlehttp/guzzle": "^7.9",
         "laravel/framework": "^11.31",
+        "laravel/socialite": "^5.16",
         "laravel/tinker": "^2.9",
+        "league/oauth2-client": "^2.7",
+        "microsoft/microsoft-graph": "^2.20",
+        "thenetworg/oauth2-azure": "^2.2",
         "vluzrmos/slack-api": "*"
     },
     "require-dev": {
@@ -70,7 +74,8 @@
         "sort-packages": true,
         "allow-plugins": {
             "pestphp/pest-plugin": true,
-            "php-http/discovery": true
+            "php-http/discovery": true,
+            "tbachert/spi": true
         }
     },
     "minimum-stability": "stable",
