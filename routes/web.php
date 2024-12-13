@@ -31,7 +31,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/appointments/{id}', [AppointmentController::class, 'destroy'])->name('appointments.destroy'); #アポ情報削除機能by米田
     Route::get('/appointments.edit/{id}', [AppointmentController::class, 'edit'])->name('appointments.edit'); #アポ情報編集画面に移動by米田
     Route::post('/appointments/{id}', [AppointmentController::class, 'update'])->name('appointments.update'); #アポ情報編集完了by米田
-
+    Route::get('/appointments/{id}', [AppointmentController::class, 'visited'])->name('appointments.visited'); #アポ情報を来客済データにするby米田
 
 
     # 受付

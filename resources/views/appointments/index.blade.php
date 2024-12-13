@@ -7,6 +7,9 @@
         function confirmDeletion() {
             return confirm('本当に削除しますか？');
         }
+        function confirmVisited() {
+            return confirm('来客済としてアポ情報から来客者情報に移動しますか？')
+        }
     </script>
 </head>
 <body>
@@ -34,11 +37,15 @@
                     <tr>
                         <td>{{ $appointment->visitor_name }}</td>
                         <td>{{ $appointment->visitor_company }}</td>
-                        <td>
-                            @foreach ($appointment->users as $user)
-                                {{ $user->name }}@if (!$loop->last), @endif
-                            @endforeach
-                        </td>
+
+                        <td>{{ $appointment->users->first()->name }}</td>
+
+                        //<td>
+                            //@foreach ($appointment->users as $user)
+                                //{{ $user->name }}@if (!$loop->last), @endif
+                            //@endforeach
+                        //</td>
+
                         <td>{{ $appointment->room->name }}</td>
                         <td>{{ $appointment->date }}</td>
                         <td>{{ $appointment->comment }}</td>
@@ -52,11 +59,16 @@
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-sm btn-danger">削除</button>
                             </form>
+                            <form action="{{ route('appointments.visited', $appointment->id) }}" method="GET" style="display:inline;" onsubmit="return confirmVisited();">
+                                @csrf
+                                <button type="submit" class="btn btn-sm btn-success">来客済にする</button>
+                            </form>
                         </td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
+        <a href="{{ route('management') }}" class="btn btn-primary float-right fixed-bottom">ホーム画面へ戻る</a>
     </div>
 </body>
 </html>

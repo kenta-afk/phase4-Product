@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>アポ情報編集</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     @vite('resources/css/app.css')
 </head>
 <body>
@@ -63,13 +64,14 @@
         <div class="sm:col-span-2">
           <label for="purpose" class="block text-sm/6 font-semibold text-gray-900">要件</label>
           <div class="mt-2.5">
-            <textarea name="comment" id="comment" rows="4" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required></textarea>
+            <textarea name="comment" id="comment" rows="4" value="{{ $appointment->comment }}" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required></textarea>
           </div>
         </div>
         <div class="sm:col-span-2 mt-10">
           <button type="submit" class="block w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">更新</button>
         </div>
     </form>
+    <a href="{{ route('management') }}" class="btn btn-primary float-right fixed-bottom">ホーム画面へ戻る</a>
 </div>
 </body>
 </html>
