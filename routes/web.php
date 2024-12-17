@@ -15,6 +15,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+//adminとuserのみアクセス可能
 Route::get('/management', function () {
     return view('management');
 })->middleware(['auth', 'verified', 'role:ADMIN,role:USER'])->name('management');
