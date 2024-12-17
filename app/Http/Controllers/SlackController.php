@@ -56,6 +56,7 @@ class SlackController extends Controller
     {
         $token = $this->slackToken;
         $response = Http::withToken($token)->get('https://slack.com/api/users.list');
+        
 
         //emailが登録されているユーザーのみslack_idを登録
         if ($response->successful()) {

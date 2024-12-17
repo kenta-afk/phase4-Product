@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Appointment;
 use App\Models\User;
+use App\Enums\Role;
 use Illuminate\Support\Facades\Http;
 
 class ReceptionController extends Controller

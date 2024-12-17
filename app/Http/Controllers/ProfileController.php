@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use App\Enums\Role;
 
 class ProfileController extends Controller
 {
@@ -43,7 +44,7 @@ class ProfileController extends Controller
     public function updateRole(Request $request)
     {
         $request->validate([
-            'role' => 'required|boolean',
+            'role' => 'required|in:1,2,3',
         ]);
 
         $user = $request->user();

@@ -8,6 +8,8 @@ use App\Http\Controllers\SlackController;
 use App\Http\Controllers\VisitorController;
 use App\Http\Controllers\MicrosoftAuthController;
 use App\Http\Controllers\CalendarController;
+use App\Http\Middleware\CheckUserRole;
+use App\Enums\Role;
 
 Route::get('/', function () {
     return view('welcome');
@@ -15,7 +17,7 @@ Route::get('/', function () {
 
 Route::get('/management', function () {
     return view('management');
-})->middleware(['auth', 'verified'])->name('management');
+})->middleware(['auth', 'verified', 'role:ADMIN,role:USER'])->name('management');
 
 Route::middleware('auth')->group(function () {
     
