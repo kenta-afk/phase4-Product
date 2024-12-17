@@ -22,6 +22,7 @@
                 </div> 
                 <div class="col"> 
                     <button type="submit" class="btn btn-primary">検索</button> 
+                    <a href="{{ route('visitors.index') }}" class="btn btn-secondary ml-2">検索内容をリセット</a>
                 </div> 
             </div>
         </form>

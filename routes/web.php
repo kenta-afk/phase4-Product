@@ -50,7 +50,7 @@ Route::middleware('auth')->group(function () {
     #Visitor
     Route::get('/visitors', [VisitorController::class, 'index'])->name('visitors.index'); #一覧表示
     Route::delete('/visitors.destroy/{id}', [VisitorController::class, 'destroy'])->name('visitors.destroy'); #削除
-    Route::get('/visitors', [VisitorController::class, 'search'])->name('visitors.search'); #検索
+    Route::get('/visitors/search', [VisitorController::class, 'search'])->name('visitors.search'); #検索
     
     // Microsoft Graph API
     //認証関係
