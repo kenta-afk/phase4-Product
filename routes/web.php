@@ -49,8 +49,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/messagetest', [SlackController::class, 'showMessageForm'])->name('host.message');// メッセージテスト用のビューを返すby魚住
     Route::post('/send-message-to-role-users', [SlackController::class, 'sendMessagesToRoleUsers'])->name('send.message.to.role.users');
 
-    #Visitor一覧表示
-    Route::get('/visitors', [VisitorController::class, 'index'])->name('visitors.index'); 
+    #Visitor
+    Route::get('/visitors', [VisitorController::class, 'index'])->name('visitors.index'); #一覧表示
+    Route::delete('/visitors.destroy/{id}', [VisitorController::class, 'destroy'])->name('visitors.destroy'); #削除
+    Route::get('/visitors/search', [VisitorController::class, 'search'])->name('visitors.search'); #検索
     
     // Microsoft Graph API
     //認証関係

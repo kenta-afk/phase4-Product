@@ -38,13 +38,11 @@
                         <td>{{ $appointment->visitor_name }}</td>
                         <td>{{ $appointment->visitor_company }}</td>
 
-                        <td>{{ $appointment->users->first()->name }}</td>
-
-                        //<td>
-                            //@foreach ($appointment->users as $user)
-                                //{{ $user->name }}@if (!$loop->last), @endif
-                            //@endforeach
-                        //</td>
+                        <td>
+                            @foreach ($appointment->users as $user)
+                                {{ $user->name }}@if (!$loop->last), @endif
+                            @endforeach
+                        </td>
 
                         <td>{{ $appointment->room->name }}</td>
                         <td>{{ $appointment->date }}</td>
