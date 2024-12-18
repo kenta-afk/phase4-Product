@@ -23,7 +23,10 @@ class ReceptionController extends Controller
     public function search(Request $request)
     {
         $visitorName = $request->input('visitor_name');
-        $appointments = Appointment::where('visitor_name', 'like', '%' . $visitorName . '%')->with('users')->get();
+        $appointments = Appointment::where('status', false)
+            ->where('visitor_name', 'like', '%' . $visitorName . '%')
+            ->with('users')
+            ->get();
 
         return response()->json(['appointments' => $appointments]);
     }
