@@ -125,6 +125,7 @@
           success: function(response) {
             setTimeout(function() {
               overlay.hide();
+              window.location.href = '{{ route("receptions.index") }}';
             }, 7000); 
           }
         });
