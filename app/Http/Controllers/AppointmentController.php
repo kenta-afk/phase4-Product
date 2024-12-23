@@ -7,12 +7,20 @@ use App\Models\Appointment;
 use App\Models\Room;
 use App\Models\User;
 use App\Http\Controllers\CalendarController;
+use Illuminate\Support\Facades\Log;
 
 class AppointmentController extends Controller
 {
     // 新規登録画面の表示
     public function create() 
     { 
+        // セッションからアクセストークンを取得
+        $accessToken = session('access_token');
+        //　アクセストークンがない場合は、認証画面にリダイレクト
+        if (!$accessToken) {
+            session(['redirect_after_auth' => route('appointments.create')]);
+            return redirect('/auth/redirect');
+        }
         $users = User::all();
         $rooms = Room::all();
         return view('appointments.create', compact('users', 'rooms'));

@@ -103,7 +103,7 @@ class CalendarController extends Controller
         $accessToken = session('access_token');
         $refreshToken = session('refresh_token');
         $expires = session('expires');
-
+        Log::info("アクセストークン: " . $accessToken);
         if (!$accessToken) {
             return [
                 'success' => false,

@@ -100,10 +100,16 @@ class MicrosoftAuthController extends Controller
                 'expires' => $token->getExpires(),
             ]);
             
-
-            return redirect('appointments.create')->with('success', '認証に成功しました。');
+            if (session('redirect_after_auth')) {
+                $before_url = session('redirect_after_auth');
+                session()->forget('redirect_after_auth');
+            } else {
+                $before_url = url()->previous();
+            }
+            Log::info("before_url: " . $before_url);
+            return redirect($before_url)->with('success', '認証に成功しました。');
         } catch (IdentityProviderException $e) {
-            \Log::error("Microsoft Authentication Error: " . $e->getMessage());
+            \Log::error("Micro Authentication Error: " . $e->getMessage());
             \Log::error("Error Details: " . $e->getTraceAsString()); // デバッグ用
             return redirect('/')->with('error', '認証エラーが発生しました。');
         }
