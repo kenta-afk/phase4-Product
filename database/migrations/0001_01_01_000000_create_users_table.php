@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use App\Enums\Role;
 
 return new class extends Migration
 {
@@ -18,6 +19,8 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
+            $table->string('slack_id')->nullable();
+            $table->boolean('role', [Role::ADMIN->value, Role::USER->value, Role::GUEST->value])->default(Role::USER->value);;
             $table->timestamps();
         });
 

@@ -10,17 +10,25 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "guzzlehttp/guzzle": "^7.9",
         "laravel/framework": "^11.31",
-        "laravel/tinker": "^2.9"
+        "laravel/socialite": "^5.16",
+        "laravel/tinker": "^2.9",
+        "league/oauth2-client": "^2.7",
+        "microsoft/microsoft-graph": "^2.20",
+        "thenetworg/oauth2-azure": "^2.2",
+        "vluzrmos/slack-api": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
+        "laravel/breeze": "^2.2",
         "laravel/pail": "^1.1",
         "laravel/pint": "^1.13",
         "laravel/sail": "^1.26",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.1",
-        "phpunit/phpunit": "^11.0.1"
+        "pestphp/pest": "^3.6",
+        "pestphp/pest-plugin-laravel": "^3.0"
     },
     "autoload": {
         "psr-4": {
@@ -66,7 +74,8 @@
         "sort-packages": true,
         "allow-plugins": {
             "pestphp/pest-plugin": true,
-            "php-http/discovery": true
+            "php-http/discovery": true,
+            "tbachert/spi": true
         }
     },
     "minimum-stability": "stable",
