@@ -85,16 +85,6 @@ class CalendarController extends Controller
     }
 
     /**
-     * イベント追加フォームを表示します。
-     */
-    public function showAddEventForm(Request $request)
-    {
-        $calendarId = $request->input('calendar_id');
-
-        return view('calendar.add_event', ['calendar_id' => $calendarId]);
-    }
-
-    /**
      * 共有カレンダーにイベントを追加します。
      */
     public function addEventToSharedCalendar($comment, $date, $room_id, $visitor_name, $visitor_company)
@@ -155,9 +145,9 @@ class CalendarController extends Controller
             // Outlookのユーザー名を取得
             $name = $userData['displayName'] ?? 'No Name';
 
-            // イベントの終了日時を設定（仮で1時間後に設定）
-            $end_datetime = Carbon::parse($date)->addHour();
-
+            // イベントの終了日時を設定（1時間後に設定）
+            $start_datetime = Carbon::parse($date, 'Asia/Tokyo')->toIso8601String();
+            $end_datetime = Carbon::parse($date, 'Asia/Tokyo')->addHours(1)->toIso8601String();
             // 共有カレンダーのID
             $calendarId = env('SHARE_CALENDAR_ID');
 
@@ -172,7 +162,7 @@ class CalendarController extends Controller
                     "content" => $eventComment
                 ],
                 "start" => [
-                    "dateTime" => $date,
+                    "dateTime" => $start_datetime,
                     "timeZone" => "Asia/Tokyo"
                 ],
                 "end" => [
@@ -359,91 +349,91 @@ class CalendarController extends Controller
     /**
      * イベントを追加します。
      */
-    public function addEvent(Request $request)
-    {
-        $accessToken = session('access_token');
+    // public function addEvent(Request $request)
+    // {
+    //     $accessToken = session('access_token');
 
-        if (!$accessToken) {
-            return redirect('/auth/redirect')->with('error', '認証が必要です。');
-        }
+    //     if (!$accessToken) {
+    //         return redirect('/auth/redirect')->with('error', '認証が必要です。');
+    //     }
 
-        // バリデーション
-        $request->validate([
-            'calendar_id' => 'required|string',
-            'subject' => 'required|string|max:255',
-            'content' => 'required|string',
-            'start_datetime' => 'required|date',
-            'end_datetime' => 'required|date|after:start_datetime',
-            'location' => 'required|string|max:255',
-            'attendee_email' => 'required|email',
-            'attendee_name' => 'required|string|max:255',
-        ]);
+    //     // バリデーション
+    //     $request->validate([
+    //         'calendar_id' => 'required|string',
+    //         'subject' => 'required|string|max:255',
+    //         'content' => 'required|string',
+    //         'start_datetime' => 'required|date',
+    //         'end_datetime' => 'required|date|after:start_datetime',
+    //         'location' => 'required|string|max:255',
+    //         'attendee_email' => 'required|email',
+    //         'attendee_name' => 'required|string|max:255',
+    //     ]);
 
-        $client = new Client();
+    //     $client = new Client();
 
-        $calendarId = $request->input('calendar_id');
-        $url = "https://graph.microsoft.com/v1.0/me/calendars/{$calendarId}/events";
+    //     $calendarId = $request->input('calendar_id');
+    //     $url = "https://graph.microsoft.com/v1.0/me/calendars/{$calendarId}/events";
 
-        $eventData = [
-            "subject" => $request->input('subject'),
-            "body" => [
-                "contentType" => "HTML",
-                "content" => $request->input('content')
-            ],
-            "start" => [
-                "dateTime" => $request->input('start_datetime'),
-                "timeZone" => "Asia/Tokyo"
-            ],
-            "end" => [
-                "dateTime" => $request->input('end_datetime'),
-                "timeZone" => "Asia/Tokyo"
-            ],
-            "location" => [
-                "displayName" => $request->input('location')
-            ],
-            "attendees" => [
-                [
-                    "emailAddress" => [
-                        "address" => $request->input('attendee_email'),
-                        "name" => $request->input('attendee_name')
-                    ],
-                    "type" => "required"
-                ]
-            ]
-        ];
+    //     $eventData = [
+    //         "subject" => $request->input('subject'),
+    //         "body" => [
+    //             "contentType" => "HTML",
+    //             "content" => $request->input('content')
+    //         ],
+    //         "start" => [
+    //             "dateTime" => $request->input('start_datetime'),
+    //             "timeZone" => "Asia/Tokyo"
+    //         ],
+    //         "end" => [
+    //             "dateTime" => $request->input('end_datetime'),
+    //             "timeZone" => "Asia/Tokyo"
+    //         ],
+    //         "location" => [
+    //             "displayName" => $request->input('location')
+    //         ],
+    //         "attendees" => [
+    //             [
+    //                 "emailAddress" => [
+    //                     "address" => $request->input('attendee_email'),
+    //                     "name" => $request->input('attendee_name')
+    //                 ],
+    //                 "type" => "required"
+    //             ]
+    //         ]
+    //     ];
 
-        try {
-            \Log::info("Graph API Request Headers: " . json_encode([
-                'Authorization' => 'Bearer ' . $accessToken,
-                'Accept'        => 'application/json',
-                'Content-Type'  => 'application/json',
-            ]));
+    //     try {
+    //         \Log::info("Graph API Request Headers: " . json_encode([
+    //             'Authorization' => 'Bearer ' . $accessToken,
+    //             'Accept'        => 'application/json',
+    //             'Content-Type'  => 'application/json',
+    //         ]));
 
-            // イベントを作成
-            $response = $client->request('POST', $url, [
-                'headers' => [
-                    'Authorization' => 'Bearer ' . $accessToken,
-                    'Accept'        => 'application/json',
-                    'Content-Type'  => 'application/json',
-                ],
-                'json' => $eventData,
-            ]);
+    //         // イベントを作成
+    //         $response = $client->request('POST', $url, [
+    //             'headers' => [
+    //                 'Authorization' => 'Bearer ' . $accessToken,
+    //                 'Accept'        => 'application/json',
+    //                 'Content-Type'  => 'application/json',
+    //             ],
+    //             'json' => $eventData,
+    //         ]);
 
-            $createdEvent = json_decode($response->getBody()->getContents(), true);
+    //         $createdEvent = json_decode($response->getBody()->getContents(), true);
 
-            \Log::info("新しいカレンダーイベントが作成されました。");
+    //         \Log::info("新しいカレンダーイベントが作成されました。");
 
-            return redirect()->route('calendar.events', ['calendar_id' => $calendarId])->with('success', 'イベントが正常に追加されました。');
-        } catch (\GuzzleHttp\Exception\ClientException $e) {
-            $response = $e->getResponse();
-            $statusCode = $response->getStatusCode();
-            $body = json_decode($response->getBody()->getContents(), true);
-            \Log::error("Microsoft Graph API エラー: {$statusCode} - " . json_encode($body));
+    //         return redirect()->route('calendar.events', ['calendar_id' => $calendarId])->with('success', 'イベントが正常に追加されました。');
+    //     } catch (\GuzzleHttp\Exception\ClientException $e) {
+    //         $response = $e->getResponse();
+    //         $statusCode = $response->getStatusCode();
+    //         $body = json_decode($response->getBody()->getContents(), true);
+    //         \Log::error("Microsoft Graph API エラー: {$statusCode} - " . json_encode($body));
 
-            return redirect()->back()->with('error', 'イベントの追加に失敗しました。');
-        } catch (\Exception $e) {
-            \Log::error("予期せぬエラー (イベント追加): " . $e->getMessage());
-            return redirect()->back()->with('error', 'イベントの追加に失敗しました。');
-        }
-    }
+    //         return redirect()->back()->with('error', 'イベントの追加に失敗しました。');
+    //     } catch (\Exception $e) {
+    //         \Log::error("予期せぬエラー (イベント追加): " . $e->getMessage());
+    //         return redirect()->back()->with('error', 'イベントの追加に失敗しました。');
+    //     }
+    // }
 }

@@ -61,19 +61,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/calendar', function () {
         return redirect('/calendars');
     });
-
     // 特定のカレンダーのイベント一覧表示ルート
     Route::get('/calendar/{calendar_id}/events', [CalendarController::class, 'getEvents'])->name('calendar.events');
-
-    // イベント追加フォーム表示ルート
-    Route::get('/calendar/add-event-form', [CalendarController::class, 'showAddEventForm'])->name('calendar.addEventForm');
-
     // イベント追加処理ルート
     Route::post('/calendar/add-event', [CalendarController::class, 'addEvent'])->name('calendar.addEvent');
-
     // 共有カレンダー作成ルート
     Route::get('/calendar/create-shared', [CalendarController::class, 'createSharedCalendar'])->name('calendar.createShared');
-
     // カレンダー共有処理ルート
     Route::post('/calendar/share', [CalendarController::class, 'shareCalendar'])->name('calendar.share');
 
