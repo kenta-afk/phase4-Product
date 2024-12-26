@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use TheNetworg\OAuth2\Client\Provider\Azure;
 use App\Models\Room;
+use App\Models\Appointment;
 use League\OAuth2\Client\Token\AccessToken;
 
 
@@ -103,18 +104,6 @@ class CalendarController extends Controller
             ];
         }
 
-        // トークンが期限切れかどうかを確認
-        if ($expires && time() > $expires) {
-            // リフレッシュトークンを使用して新しいアクセストークンを取得する処理を追加する必要があります。
-            // ここでは簡略化のため、認証ページにリダイレクトします。
-            Log::warning("アクセストークンが期限切れです。");
-            return [
-                'success' => false,
-                'message' => '認証が期限切れです。再認証が必要です。',
-                'redirect' => '/auth/redirect'
-            ];
-        }
-
         try {
             $client = new Client();
 
@@ -204,7 +193,8 @@ class CalendarController extends Controller
 
             return [
                 'success' => true,
-                'data' => $eventDataResponse
+                'data' => $eventDataResponse,
+                'event_id' => $eventDataResponse['id']
             ];
         } catch (\GuzzleHttp\Exception\ClientException $e) {
             $response = $e->getResponse();
@@ -441,4 +431,51 @@ class CalendarController extends Controller
     //         return redirect()->back()->with('error', 'イベントの追加に失敗しました。');
     //     }
     // }
+
+    /**
+     * イベントを削除
+     */
+    public function deleteEventToSharedCalendar($event_id)
+    {
+        $accessToken = session('access_token');
+
+        if (!$accessToken) {
+            return redirect('/auth/redirect')->with('error', '認証が必要です。');
+        }
+
+        $client = new Client();
+
+        // Microsoft Graph APIのエンドポイント
+        $url = "https://graph.microsoft.com/v1.0/me/calendars/{$calendar_id}/events/{$event_id}";
+
+        try {
+            $response = $client->request('DELETE', $url, [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $accessToken,
+                    'Accept'        => 'application/json',
+                ],
+            ]);
+
+            if ($response->getStatusCode() == 204) {
+                Log::info("イベントが正常に削除されました。");
+                return response()->json(['success' => 'イベントが正常に削除されました。'], 204);
+            } else {
+                Log::error("イベントの削除に失敗しました。");
+                return response()->json(['error' => 'イベントの削除に失敗しました。'], $response->getStatusCode());
+            }
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            $response = $e->getResponse();
+            $statusCode = $response->getStatusCode();
+            $body = json_decode($response->getBody()->getContents(), true);
+            Log::error("Microsoft Graph API エラー (イベント削除): {$statusCode} - " . json_encode($body));
+
+            return response()->json(['error' => 'イベントの削除に失敗しました。', 'details' => $body], $statusCode);
+        } catch (\GuzzleHttp\Exception\ServerException $e) {
+            Log::error("Microsoft Graph API サーバーエラー (イベント削除): " . $e->getMessage());
+            return response()->json(['error' => 'イベントの削除に失敗しました。'], 500);
+        } catch (\Exception $e) {
+            Log::error("予期せぬエラー (イベント削除): " . $e->getMessage());
+            return response()->json(['error' => 'イベントの削除に失敗しました。'], 500);
+        }
+    }
 }

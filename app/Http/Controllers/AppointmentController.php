@@ -40,20 +40,7 @@ class AppointmentController extends Controller
             'comment' => 'required|string|max:1000', 
         ]); 
         
-        // アポ情報の保存
-        $appointment = Appointment::create([
-            'visitor_name' => $request->input('visitor_name'),
-            'visitor_company' => $request->input('visitor_company'),
-            'room_id' => $request->input('room_id'),
-            'date' => $request->input('date'),
-            'comment' => $request->input('comment'),
-            'status' => false
-        ]);
-
-        // 対応者のIDを取得し、中間テーブルに保存
-        $userIds = User::whereIn('name', $request->input('user_names'))->pluck('id');
-        $appointment->users()->attach($userIds);
-
+        
         //共有カレンダーにアポイントメントを登録
         //calendarControllerにリクエストを送信//$comment, $date, $room_id, $visitor_name,$visitor_company
         $calendarController = new CalendarController();
@@ -64,6 +51,25 @@ class AppointmentController extends Controller
             $validatedData['visitor_name'],
             $validatedData['visitor_company']
         );
+
+        Log::info($result);
+
+        $event_id = $result['event_id'];
+
+        // アポ情報の保存
+        $appointment = Appointment::create([
+            'visitor_name' => $request->input('visitor_name'),
+            'visitor_company' => $request->input('visitor_company'),
+            'room_id' => $request->input('room_id'),
+            'date' => $request->input('date'),
+            'comment' => $request->input('comment'),
+            'event_id' => $event_id,
+            'status' => false,
+        ]);
+
+        // 対応者のIDを取得し、中間テーブルに保存
+        $userIds = User::whereIn('name', $request->input('user_names'))->pluck('id');
+        $appointment->users()->attach($userIds);
 
         // 管理画面にリダイレクトし、アラートを表示
         return redirect()->route('management')->with('success', 'アポ情報が登録されました。'); 
@@ -80,6 +86,20 @@ class AppointmentController extends Controller
 
     public function destroy($id)
     {
+        // セッションからアクセストークンを取得
+        $accessToken = session('access_token');
+        //　アクセストークンがない場合は、認証画面にリダイレクト
+        if (!$accessToken) {
+            session(['redirect_after_auth' => route('appointments.index')]);
+            return redirect('/auth/redirect');
+        }
+
+        //共有カレンダーからアポイントメントイベントを削除
+        $calendarController = new CalendarController();
+        $result = $calendarController->deleteEventToSharedCalendar(
+            $event_id
+        );
+
     $appointment = Appointment::findOrFail($id);
     $appointment->delete();
 

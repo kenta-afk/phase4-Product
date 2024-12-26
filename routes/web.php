@@ -56,20 +56,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/auth/callback', [MicrosoftAuthController::class, 'handleProviderCallback']);
     
     //カレンダー関係
-    // カレンダー一覧表示ルート
-    Route::get('/calendars', [MicrosoftAuthController::class, 'listCalendars'])->name('calendar.list');
-    Route::get('/calendar', function () {
-        return redirect('/calendars');
-    });
-    // 特定のカレンダーのイベント一覧表示ルート
-    Route::get('/calendar/{calendar_id}/events', [CalendarController::class, 'getEvents'])->name('calendar.events');
-    // イベント追加処理ルート
-    Route::post('/calendar/add-event', [CalendarController::class, 'addEvent'])->name('calendar.addEvent');
-    // 共有カレンダー作成ルート
-    Route::get('/calendar/create-shared', [CalendarController::class, 'createSharedCalendar'])->name('calendar.createShared');
-    // カレンダー共有処理ルート
-    Route::post('/calendar/share', [CalendarController::class, 'shareCalendar'])->name('calendar.share');
-
+    Route::get('/calendars', [MicrosoftAuthController::class, 'listCalendars'])->name('calendar.list');// カレンダー一覧表示ルート
+    Route::get('/calendar', function () {return redirect('/calendars');});
+    Route::get('/calendar/{calendar_id}/events', [CalendarController::class, 'getEvents'])->name('calendar.events');// 特定のカレンダーのイベント一覧表示ルート
+    Route::post('/calendar/add-event', [CalendarController::class, 'addEvent'])->name('calendar.addEvent');// イベント追加処理ルート
+    Route::get('/calendar/create-shared', [CalendarController::class, 'createSharedCalendar'])->name('calendar.createShared');// 共有カレンダー作成ルート
+    Route::post('/calendar/share', [CalendarController::class, 'shareCalendar'])->name('calendar.share');// カレンダー共有処理ルート
+    Route::delete('/calendars/{calendar_id}/events/{event_id}', [CalendarController::class, 'deleteEventToSharedCalendar'])->name('delete.event');
 
 });
 
