@@ -93,7 +93,10 @@ class AppointmentController extends Controller
             session(['redirect_after_auth' => route('appointments.index')]);
             return redirect('/auth/redirect');
         }
-
+        
+        // アポ情報からイベントIDを取得
+        $appointment = Appointment::findOrFail($id);
+        $event_id = $appointment->event_id;
         //共有カレンダーからアポイントメントイベントを削除
         $calendarController = new CalendarController();
         $result = $calendarController->deleteEventToSharedCalendar(

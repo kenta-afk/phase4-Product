@@ -46,6 +46,7 @@ class CalendarController extends Controller
         $accessToken = session('access_token');
 
         if (!$accessToken) {
+            session(['redirect_after_auth' => route('management')]);
             return redirect('/auth/redirect')->with('error', '認証が必要です。');
         }
 
@@ -97,11 +98,8 @@ class CalendarController extends Controller
         $expires = session('expires');
         Log::info("アクセストークン: " . $accessToken);
         if (!$accessToken) {
-            return [
-                'success' => false,
-                'message' => '認証が必要です。',
-                'redirect' => '/auth/redirect'
-            ];
+            session(['redirect_after_auth' => route('appointments.create')]);
+            return redirect('/auth/redirect');
         }
 
         try {
@@ -223,6 +221,7 @@ class CalendarController extends Controller
         $accessToken = session('access_token');
 
         if (!$accessToken) {
+            session(['redirect_after_auth' => route('management')]);
             return redirect('/auth/redirect')->with('error', '認証が必要です。');
         }
 
@@ -287,6 +286,7 @@ class CalendarController extends Controller
         $accessToken = session('access_token');
 
         if (!$accessToken) {
+            session(['redirect_after_auth' => route('management')]);
             return redirect('/auth/redirect')->with('error', '認証が必要です。');
         }
 
@@ -440,6 +440,7 @@ class CalendarController extends Controller
         $accessToken = session('access_token');
 
         if (!$accessToken) {
+            session(['redirect_after_auth' => route('appointments.index')]);
             return redirect('/auth/redirect')->with('error', '認証が必要です。');
         }
 

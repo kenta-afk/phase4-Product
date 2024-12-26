@@ -123,6 +123,7 @@ class MicrosoftAuthController extends Controller
         $accessToken = session('access_token');
 
         if (!$accessToken) {
+            session(['redirect_after_auth' => route('management')]);
             return redirect('/auth/redirect')->with('error', '認証が必要です。');
         }
 
