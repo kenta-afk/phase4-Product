@@ -445,7 +445,8 @@ class CalendarController extends Controller
         }
 
         $client = new Client();
-
+        $calendar_id = env('SHARE_CALENDAR_ID');    // 共有カレンダーのID
+     
         // Microsoft Graph APIのエンドポイント
         $url = "https://graph.microsoft.com/v1.0/me/calendars/{$calendar_id}/events/{$event_id}";
 
