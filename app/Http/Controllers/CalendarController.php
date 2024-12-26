@@ -7,6 +7,7 @@ use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use TheNetworg\OAuth2\Client\Provider\Azure;
+use App\Models\Room;
 use League\OAuth2\Client\Token\AccessToken;
 
 
@@ -151,6 +152,10 @@ class CalendarController extends Controller
             // 共有カレンダーのID
             $calendarId = env('SHARE_CALENDAR_ID');
 
+            // ルーム名を取得
+            $room = Room::find($room_id);
+            $room_name = $room->name;
+
             // イベントのコメントを整形
             $eventComment = "【来客】" . $visitor_company . " " . $visitor_name . "様 " . $comment;
 
@@ -170,7 +175,7 @@ class CalendarController extends Controller
                     "timeZone" => "Asia/Tokyo"
                 ],
                 "location" => [
-                    "displayName" => $room_id
+                    "displayName" => $room_name
                 ],
                 "attendees" => [
                     [
