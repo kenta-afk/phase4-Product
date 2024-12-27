@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>アポ情報一覧</title>
+    @vite('resources/css/app.css')
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <script>
         function confirmDeletion() {
@@ -66,7 +67,9 @@
                 @endforeach
             </tbody>
         </table>
-        <a href="{{ route('management') }}" class="btn btn-primary float-right fixed-bottom">ホーム画面へ戻る</a>
+        <div class="flex justify-center mt-6">
+            <a href="{{ route('management') }}" class="inline-block rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-3 text-center text-sm font-semibold text-white shadow-lg hover:from-blue-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-transform transform hover:scale-105 fixed bottom-4 left-1/2 transform -translate-x-1/2">ホーム画面へ戻る</a>
+        </div>
     </div>
 </body>
 </html>

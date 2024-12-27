@@ -20,6 +20,7 @@ class Appointment extends Model
         'visitor_company',
         'date',
         'comment',
+        'event_id',
     ];
 
     public function users()
