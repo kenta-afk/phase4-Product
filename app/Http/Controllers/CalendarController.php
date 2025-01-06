@@ -214,6 +214,128 @@ class CalendarController extends Controller
     }
 
     /**
+     * 共有カレンダーからイベントを削除します。
+     */
+    public function deleteEventToSharedCalendar($event_id)
+    {
+        $accessToken = session('access_token');
+
+        if (!$accessToken) {
+            session(['redirect_after_auth' => route('appointments.index')]);
+            return redirect('/auth/redirect')->with('error', '認証が必要です。');
+        }
+
+        $client = new Client();
+        $calendar_id = env('SHARE_CALENDAR_ID');    // 共有カレンダーのID
+     
+        // Microsoft Graph APIのエンドポイント
+        $url = "https://graph.microsoft.com/v1.0/me/calendars/{$calendar_id}/events/{$event_id}";
+
+        try {
+            $response = $client->request('DELETE', $url, [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $accessToken,
+                    'Accept'        => 'application/json',
+                ],
+            ]);
+
+            if ($response->getStatusCode() == 204) {
+                Log::info("イベントが正常に削除されました。");
+                return response()->json(['success' => 'イベントが正常に削除されました。'], 204);
+            } else {
+                Log::error("イベントの削除に失敗しました。");
+                return response()->json(['error' => 'イベントの削除に失敗しました。'], $response->getStatusCode());
+            }
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            $response = $e->getResponse();
+            $statusCode = $response->getStatusCode();
+            $body = json_decode($response->getBody()->getContents(), true);
+            Log::error("Microsoft Graph API エラー (イベント削除): {$statusCode} - " . json_encode($body));
+
+            return response()->json(['error' => 'イベントの削除に失敗しました。', 'details' => $body], $statusCode);
+        } catch (\GuzzleHttp\Exception\ServerException $e) {
+            Log::error("Microsoft Graph API サーバーエラー (イベント削除): " . $e->getMessage());
+            return response()->json(['error' => 'イベントの削除に失敗しました。'], 500);
+        } catch (\Exception $e) {
+            Log::error("予期せぬエラー (イベント削除): " . $e->getMessage());
+            return response()->json(['error' => 'イベントの削除に失敗しました。'], 500);
+        }
+    }
+    
+    /** 
+     * 共有カレンダーのイベント一覧を取得して表示します。
+     */
+    public function getEventsToSharedCalendar()
+    {
+        $accessToken = session('access_token');
+
+        if (!$accessToken) {
+            session(['redirect_after_auth' => route('management')]);
+            return redirect('/auth/redirect')->with('error', '認証が必要です。');
+        }
+
+        $client = new Client();
+        $events = [];
+        $calendar_id = env('SHARE_CALENDAR_ID');    // 共有カレンダーのID
+
+        // Microsoft Graph APIのエンドポイント
+        $url = "https://graph.microsoft.com/v1.0/me/calendars/{$calendar_id}/events?\$top=100";
+
+        try {
+            while ($url) {
+            Log::info("Fetching events from: " . $url);
+            $response = $client->request('GET', $url, [
+                'headers' => [
+                'Authorization' => 'Bearer ' . $accessToken,
+                'Accept'        => 'application/json',
+                ],
+            ]);
+
+            $data = json_decode($response->getBody()->getContents(), true);
+            Log::info("Fetched events data: " . json_encode($data));
+
+            if (isset($data['value'])) {
+                foreach ($data['value'] as $event) {
+                    $events[] = [
+                        'id' => $event['id'],
+                        'subject' => $event['subject'],
+                        'start' => $event['start'],
+                        'end' => $event['end'],
+                        'location' => $event['location']['uniqueId'] ?? null,
+                    ];
+                }
+                Log::info("Fetched " . count($data['value']) . " events.");
+            }
+
+            // ページネーションの確認
+            $url = isset($data['@odata.nextLink']) ? $data['@odata.nextLink'] : null;
+            if ($url) {
+                Log::info("Next events page URL: " . $url);
+            }
+            }
+
+            Log::info("Total events fetched: " . count($events));
+
+            // JSON形式でイベント一覧を返す
+            return response()->json(['events' => $events, 'calendar_id' => $calendar_id]);
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            $response = $e->getResponse();
+            $statusCode = $response->getStatusCode();
+            $body = json_decode($response->getBody()->getContents(), true);
+            Log::error("Microsoft Graph API エラー (イベント取得): {$statusCode} - " . json_encode($body));
+
+            return response()->json(['error' => 'イベント情報の取得に失敗しました。', 'details' => $body], $statusCode);
+        } catch (\GuzzleHttp\Exception\ServerException $e) {
+            Log::error("Microsoft Graph API サーバーエラー (イベント取得): " . $e->getMessage());
+            return response()->json(['error' => 'イベント情報の取得に失敗しました。'], 500);
+        } catch (\Exception $e) {
+            Log::error("予期せぬエラー (イベント取得): " . $e->getMessage());
+            return response()->json(['error' => 'イベント情報の取得に失敗しました。'], 500);
+        }
+    }
+
+
+    /**
      * カレンダーを特定のユーザーと共有します。
      */
     public function shareCalendar(Request $request)
@@ -281,7 +403,7 @@ class CalendarController extends Controller
      * @param string $calendar_id
      * @return \Illuminate\View\View|\Illuminate\Http\JsonResponse
      */
-    public function getEvents($calendar_id)
+    public function getSharedEvents()
     {
         $accessToken = session('access_token');
 
@@ -432,52 +554,4 @@ class CalendarController extends Controller
     //     }
     // }
 
-    /**
-     * イベントを削除
-     */
-    public function deleteEventToSharedCalendar($event_id)
-    {
-        $accessToken = session('access_token');
-
-        if (!$accessToken) {
-            session(['redirect_after_auth' => route('appointments.index')]);
-            return redirect('/auth/redirect')->with('error', '認証が必要です。');
-        }
-
-        $client = new Client();
-        $calendar_id = env('SHARE_CALENDAR_ID');    // 共有カレンダーのID
-     
-        // Microsoft Graph APIのエンドポイント
-        $url = "https://graph.microsoft.com/v1.0/me/calendars/{$calendar_id}/events/{$event_id}";
-
-        try {
-            $response = $client->request('DELETE', $url, [
-                'headers' => [
-                    'Authorization' => 'Bearer ' . $accessToken,
-                    'Accept'        => 'application/json',
-                ],
-            ]);
-
-            if ($response->getStatusCode() == 204) {
-                Log::info("イベントが正常に削除されました。");
-                return response()->json(['success' => 'イベントが正常に削除されました。'], 204);
-            } else {
-                Log::error("イベントの削除に失敗しました。");
-                return response()->json(['error' => 'イベントの削除に失敗しました。'], $response->getStatusCode());
-            }
-        } catch (\GuzzleHttp\Exception\ClientException $e) {
-            $response = $e->getResponse();
-            $statusCode = $response->getStatusCode();
-            $body = json_decode($response->getBody()->getContents(), true);
-            Log::error("Microsoft Graph API エラー (イベント削除): {$statusCode} - " . json_encode($body));
-
-            return response()->json(['error' => 'イベントの削除に失敗しました。', 'details' => $body], $statusCode);
-        } catch (\GuzzleHttp\Exception\ServerException $e) {
-            Log::error("Microsoft Graph API サーバーエラー (イベント削除): " . $e->getMessage());
-            return response()->json(['error' => 'イベントの削除に失敗しました。'], 500);
-        } catch (\Exception $e) {
-            Log::error("予期せぬエラー (イベント削除): " . $e->getMessage());
-            return response()->json(['error' => 'イベントの削除に失敗しました。'], 500);
-        }
-    }
 }
