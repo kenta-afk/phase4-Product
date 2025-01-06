@@ -46,7 +46,7 @@
           <div class="mt-2.5">
             <select name="room_id" id="room_id" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required>
               @foreach($rooms as $room)
-                <option value="{{ $room->id }}">{{ $room->name }}</option>
+                <option value="{{ $room->id }}" data-name="{{ $room->name }}">{{ $room->name }}</option>
               @endforeach
             </select>
           </div>
@@ -67,6 +67,10 @@
           <button type="submit" class="block w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">登録</button>
         </div>
     </form>
+    <h2 class="mt-6">選択された会議室のイベント一覧</h2>
+    <div id="events-list" class="mt-4 space-y-4 bg-gray-100 p-4 rounded-lg">
+      <!-- イベントがここに表示されます -->
+    </div>
     <div class="flex justify-center mt-6">
       <a href="{{ route('management') }}" class="inline-block rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-3 text-center text-sm font-semibold text-white shadow-lg hover:from-blue-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-transform transform hover:scale-105 fixed bottom-4 left-1/2 transform -translate-x-1/2">ホーム画面へ戻る</a>
     </div>
@@ -82,6 +86,59 @@
             placeholder: "対応者を選択してください",
             allowClear: true
         });
+    </script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          const roomSelect = document.getElementById('room_id');
+          const eventsList = document.getElementById('events-list');
+
+          roomSelect.addEventListener('change', function() {
+              const selectedRoomName = roomSelect.options[roomSelect.selectedIndex].getAttribute('data-name');
+              console.log(selectedRoomName);
+              fetchEvents(selectedRoomName);
+          });
+
+          function fetchEvents(roomName) {
+              fetch('/calendar/events')
+                  .then(response => {
+                      if (!response.ok) {
+                          redirect('/auth/redirect');
+                          throw new Error('Network response was not ok ' + response.statusText);
+                      }
+                      return response.json();
+                  })
+                  .then(data => {
+                      if (data.error) {
+                          throw new Error(data.error);
+                      }
+                      const events = data.events.filter(event => event.location === roomName);
+                      displayEvents(events);
+                  })
+                  .catch(error => {
+                      console.error('Error fetching events:', error);
+                      eventsList.innerHTML = `<p>イベントの取得に失敗しました: ${error.message}</p>`;
+                  });
+          }
+
+          function displayEvents(events) {
+              eventsList.innerHTML = '';
+              if (events.length === 0) {
+                  eventsList.innerHTML = '<p>該当するイベントはありません。</p>';
+                  return;
+              }
+
+              events.forEach(event => {
+                  const eventElement = document.createElement('div');
+                  eventElement.classList.add('event');
+                    eventElement.innerHTML = `
+                      <p><strong>件名:</strong> ${event.subject}</p>
+                      <p><strong>開始:</strong> ${new Date(event.start.dateTime).toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' })}</p>
+                      <p><strong>終了:</strong> ${new Date(event.end.dateTime).toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' })}</p>
+                  `;
+                  eventsList.appendChild(eventElement);
+              });
+          }
+      });
     </script>
 </body>
 </html>
