@@ -34,6 +34,9 @@ class VisitorController extends Controller
         if ($request->filled('visitor_name')) {
             $query->where('visitor_name', 'like', '%' . $request->input('visitor_name') . '%');
         }
+        if ($request->filled('visitor_company')) {
+            $query->where('visitor_company', 'like', '%' . $request->input('visitor_company') . '%');
+        }
 
         $visitors = $query->get();
 

@@ -20,6 +20,10 @@
                 {{ session('success') }}
             </div>
         @endif
+        <div class="mb-4">
+            <a href="{{ route('appointments.index', ['sort' => 'date']) }}" class="btn btn-secondary">日時順</a> 
+            <a href="{{ route('appointments.index', ['sort' => 'updated_at']) }}" class="btn btn-secondary">更新順</a>
+        </div>
         <table class="table table-striped">
             <thead>
                 <tr>

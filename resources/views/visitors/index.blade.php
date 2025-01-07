@@ -19,7 +19,10 @@
                 </div> 
                 <div class="col"> 
                     <input type="text" name="visitor_name" class="form-control" placeholder="来客者の名前"> 
-                </div> 
+                </div>
+                <div class="col"> 
+                    <input type="text" name="visitor_company" class="form-control" placeholder="来客者の所属"> 
+                </div>
                 <div class="col"> 
                     <button type="submit" class="btn btn-primary">検索</button> 
                     <a href="{{ route('visitors.index') }}" class="btn btn-secondary ml-2">検索内容をリセット</a>
