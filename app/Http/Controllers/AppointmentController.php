@@ -130,7 +130,7 @@ class AppointmentController extends Controller
         # アポ情報編集
         $appointment = Appointment::findOrFail($id);
         $user = User::where('name', $request->input('user_name'))->first();
-
+                
         $appointment->update([
             'visitor_name' => $request->input('visitor_name'), 
             'visitor_company' => $request->input('visitor_company'), 
@@ -138,8 +138,29 @@ class AppointmentController extends Controller
             'date' => $request->input('date'), 
             'comment' => $request->input('comment')
         ]);
-
         $appointment->users()->sync([$user->id]);
+        
+        // データを作成
+        $comment = $request->input('comment');
+        $date = $request->input('date');
+        $room_id = $request->input('room_id');
+        $visitor_name = $request->input('visitor_name');
+        $visitor_company = $request->input('visitor_company');
+        // アポ情報からイベントIDを取得
+        $appointment = Appointment::findOrFail($id);
+        $event_id = $appointment->event_id;
+        
+        // 共有カレンダーのアポイントメントを編集
+        // $comment, $date, $room_id, $visitor_name, $visitor_company, $event_id
+        $calendarController = new CalendarController();
+        $result = $calendarController->updateEventToSharedCalendar(
+            $comment,
+            $date,
+            $room_id,
+            $visitor_name, 
+            $visitor_company,
+            $event_id,
+        );
 
         return redirect()->route('appointments.index')->with('success', 'アポ情報は更新されました');
     }
