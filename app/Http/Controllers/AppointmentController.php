@@ -49,7 +49,8 @@ class AppointmentController extends Controller
             $validatedData['date'],
             $validatedData['room_id'],
             $validatedData['visitor_name'],
-            $validatedData['visitor_company']
+            $validatedData['visitor_company'],
+            $validatedData['user_names']
         );
 
         Log::info($result);
@@ -149,6 +150,7 @@ class AppointmentController extends Controller
         // アポ情報からイベントIDを取得
         $appointment = Appointment::findOrFail($id);
         $event_id = $appointment->event_id;
+        $user_name = $request->input('user_name');
         
         // 共有カレンダーのアポイントメントを編集
         // $comment, $date, $room_id, $visitor_name, $visitor_company, $event_id
@@ -160,6 +162,7 @@ class AppointmentController extends Controller
             $visitor_name, 
             $visitor_company,
             $event_id,
+            $user_name,
         );
 
         return redirect()->route('appointments.index')->with('success', 'アポ情報は更新されました');

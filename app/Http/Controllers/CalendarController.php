@@ -90,7 +90,7 @@ class CalendarController extends Controller
     /**
      * 共有カレンダーにイベントを追加します。
      */
-    public function addEventToSharedCalendar($comment, $date, $room_id, $visitor_name, $visitor_company)
+    public function addEventToSharedCalendar($comment, $date, $room_id, $visitor_name, $visitor_company,$user_names)
     {
         // セッションからアクセストークンを取得
         $accessToken = session('access_token');
@@ -146,12 +146,17 @@ class CalendarController extends Controller
             // イベントのコメントを整形
             $eventComment = "【来客】" . $visitor_company . " " . $visitor_name . "様 " . $comment;
 
+            // 対応者を取得
+            $attendeesNames = implode(',', $user_names);
+            $eventCommentWithAttendees = $eventComment . '</br> 【対応者】' . $attendeesNames;
+
+
             // イベントデータの構築
             $eventData = [
                 "subject" => $eventComment,
                 "body" => [
                     "contentType" => "HTML",
-                    "content" => $eventComment
+                    "content" => $eventCommentWithAttendees
                 ],
                 "start" => [
                     "dateTime" => $start_datetime,
@@ -265,7 +270,7 @@ class CalendarController extends Controller
     /**
      * 共有カレンダーのイベントを編集します。
      */
-    public function updateEventToSharedCalendar($comment, $date, $room_id, $visitor_name, $visitor_company, $event_id)
+    public function updateEventToSharedCalendar($comment, $date, $room_id, $visitor_name, $visitor_company, $event_id, $user_name)  
     {
         // セッションからアクセストークンを取得
         $accessToken = session('access_token');
@@ -319,13 +324,15 @@ class CalendarController extends Controller
 
         // イベントのコメントを整形
         $eventComment = "【来客】" . $visitor_company . " " . $visitor_name . "様 " . $comment;
+        // 対応者を取得
+        $eventCommentWithAttendees = $eventComment . '</br> 【対応者】' . $user_name;
 
         // イベントデータの構築
         $eventData = [
             "subject" => $eventComment,
             "body" => [
                 "contentType" => "HTML",
-                "content" => $eventComment
+                "content" => $eventCommentWithAttendees
             ],
             "start" => [
                 "dateTime" => $start_datetime,
