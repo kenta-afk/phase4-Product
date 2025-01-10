@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Appointment;
 use App\Models\Room;
 use App\Models\User;
+use Carbon\Carbon;
 use App\Http\Controllers\CalendarController;
 use Illuminate\Support\Facades\Log;
 
@@ -76,13 +77,16 @@ class AppointmentController extends Controller
         return redirect()->route('management')->with('success', 'アポ情報が登録されました。'); 
     }
 
-    public function index()
+    public function index(Request $request)
     {
+    $sort = $request->input('sort', 'date');
+    
+    $appointments = Appointment::where('status', false)
+        ->with(['users', 'room'])
+        ->orderBy($sort, 'asc') 
+        ->get();
 
-        $appointments = Appointment::where('status', false)
-        ->with(['users', 'room'])->get();
-
-        return view('appointments.index', compact('appointments'));
+    return view('appointments.index', compact('appointments'));
     }
 
     public function destroy($id)
