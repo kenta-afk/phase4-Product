@@ -67,6 +67,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/calendar/add-event', [CalendarController::class, 'addEvent'])->name('calendar.addEvent');// イベント追加処理ルート
     Route::get('/calendar/create-shared', [CalendarController::class, 'createSharedCalendar'])->name('calendar.createShared');// 共有カレンダー作成ルート
     Route::post('/calendar/share', [CalendarController::class, 'shareCalendar'])->name('calendar.share');// カレンダー共有処理ルート
+    Route::get('/calendar/events', [CalendarController::class, 'getEventsToSharedCalendar'])->name('calendar.getSharedEvent');// イベント詳細表示ルート
     Route::delete('/calendars/{calendar_id}/events/{event_id}', [CalendarController::class, 'deleteEventToSharedCalendar'])->name('delete.event');
 
 });
